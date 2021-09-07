@@ -5,7 +5,7 @@
 # Last update: July 27, 2021
 
 #Dylan Cole
-#August 12, 2021
+#September 7, 2021
 #Incorporating code written by Laura Keating and Alyssa Friesen 
 
 
@@ -23,7 +23,7 @@ set.seed(123) # to ensure the same set of random numbers each time
 G_and_A_prop_of_total <- 0.15
 
 ### Load the inputs
-inputs <- newSpeciesPrioritization::dat_inputs # lazy loaded with package
+inputs <- newSpeciesPrioritization::inputs # lazy loaded with package
 
 ### Specify what the max score is for functional
 functional_score_max <- 10 # 10 if using the fine-scale weights
