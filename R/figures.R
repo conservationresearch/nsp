@@ -18,6 +18,7 @@
 #'
 #' @export
 # Still needs unit testing
+
 graph_benefit <- function(results_benefit_national, results_benefit_global, inputs){
   
   # Add the category type to the results and then merge them so we can plot global and national together.
@@ -30,38 +31,33 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
   
   ## Create a data frame to identify species that are endemic
   sim_results_summary_benefits <- sim_results_summary_benefits %>%
-    dplyr::mutate(lab = dplyr::if_else(CZCT_program %in% c("Banff Springs Snail","Maritime Ringlet","Atlantic whitefish"), "*", ""))
+    dplyr::mutate(lab = dplyr::if_else(org_program %in% endemic_species, "*", ""))
   
-  # Change the Boreal Caribou label to Woodland caribou
-  sim_results_summary_benefits$CZCT_program <- as.character(sim_results_summary_benefits$CZCT_program) # remove the factor levels
-  sim_results_summary_benefits$CZCT_program[which(sim_results_summary_benefits$CZCT_program == "Boreal Caribou")] <- "Woodland Caribou"
-  
-  # # Reorder the factor levels for the CZCT program so that they are ordered by global benefits.
-  # results_benefit_global$CZCT_program <- as.character(results_benefit_global$CZCT_program) # remove the factor levels
-  # results_benefit_global$CZCT_program[which(results_benefit_global$CZCT_program == "Boreal Caribou")] <- "Woodland Caribou"
-  # sim_results_summary_benefits$CZCT_program <- factor(sim_results_summary_benefits$CZCT_program, 
-  #                                                     levels=unique(results_benefit_global$CZCT_program[order(results_benefit_global$mean, decreasing = TRUE)]), ordered=TRUE)
+  # # Reorder the factor levels for the org program so that they are ordered by global benefits.
+  # results_benefit_global$org_program <- as.character(results_benefit_global$org_program) # remove the factor levels
+  # sim_results_summary_benefits$org_program <- factor(sim_results_summary_benefits$org_program, 
+  #                                                     levels=unique(results_benefit_global$org_program[order(results_benefit_global$mean, decreasing = TRUE)]), ordered=TRUE)
   
   
   
   # Add triage cateogry
-  # CZCT_program_triage$triage_category
+  # org_program_triage$triage_category
   # sim_results_summary_benefits$triage_category <- NA # initalize
-  # sim_results_summary_benefits$triage_category <- CZCT_program_triage$triage_category[match(sim_results_summary_benefits$CZCT_program, CZCT_program_triage$CZCT_program)]
+  # sim_results_summary_benefits$triage_category <- org_program_triage$triage_category[match(sim_results_summary_benefits$org_program, org_program_triage$org_program)]
   
-  # Reorder the factor levels for the CZCT program so that they are ordered by triage category first and then global benefits.
-  # results_benefit_global$CZCT_program <- as.character(results_benefit_global$CZCT_program) # remove the factor levels
-  # sim_results_summary_benefits$CZCT_program <- factor(sim_results_summary_benefits$CZCT_program, 
-  #                                                     levels=unique(results_benefit_global$CZCT_program[order(sim_results_summary_benefits$triage_category,
+  # Reorder the factor levels for the org program so that they are ordered by triage category first and then global benefits.
+  # results_benefit_global$org_program <- as.character(results_benefit_global$org_program) # remove the factor levels
+  # sim_results_summary_benefits$org_program <- factor(sim_results_summary_benefits$org_program, 
+  #                                                     levels=unique(results_benefit_global$org_program[order(sim_results_summary_benefits$triage_category,
   #                                                                                                             -sim_results_summary_benefits$mean, decreasing = FALSE)]), ordered=TRUE)
   
-  results_benefit_global$CZCT_program <- as.character(results_benefit_global$CZCT_program) # remove the factor levels
-  sim_results_summary_benefits$CZCT_program <- factor(sim_results_summary_benefits$CZCT_program, 
-                                                      levels=unique(results_benefit_global$CZCT_program[order(-sim_results_summary_benefits$mean, decreasing = FALSE)]), ordered=TRUE)
+  results_benefit_global$org_program <- as.character(results_benefit_global$org_program) # remove the factor levels
+  sim_results_summary_benefits$org_program <- factor(sim_results_summary_benefits$org_program, 
+                                                      levels=unique(results_benefit_global$org_program[order(-sim_results_summary_benefits$mean, decreasing = FALSE)]), ordered=TRUE)
   
   # Make the graph
-  # benefits_graph <- ggplot(sim_results_summary_benefits, aes(x = CZCT_program, y = mean, fill = category, color = triage_category)) +
-  benefits_graph <- ggplot2::ggplot(sim_results_summary_benefits, ggplot2::aes(x = CZCT_program, y = mean, fill = category)) +
+  # benefits_graph <- ggplot(sim_results_summary_benefits, aes(x = org_program, y = mean, fill = category, color = triage_category)) +
+  benefits_graph <- ggplot2::ggplot(sim_results_summary_benefits, ggplot2::aes(x = org_program, y = mean, fill = category)) +
     ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
     ggplot2::geom_text(ggplot2::aes(label = lab), vjust=-0.25, size = 10)+
     #scale_colour_manual(values=c("#000000")) +
@@ -90,12 +86,12 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
   extirpated_or_extinct <- c(species_extirpated_national, species_extinct_global)
   
   sim_results_summary_benefits$extirpated_or_extinct <- "Extant" # initialize
-  sim_results_summary_benefits$extirpated_or_extinct[is.na(match(sim_results_summary_benefits$CZCT_program, extirpated_or_extinct)) == FALSE] <- "EX/EW" # initialize
+  sim_results_summary_benefits$extirpated_or_extinct[is.na(match(sim_results_summary_benefits$org_program, extirpated_or_extinct)) == FALSE] <- "EX/EW" # initialize
   
   sim_results_summary_benefits$extirpated_or_extinct <- factor(sim_results_summary_benefits$extirpated_or_extinct, 
                                                                levels = c("Extant", "EX/EW"))
   
-  benefits_graph2 <- ggplot2::ggplot(sim_results_summary_benefits, ggplot2::aes(x = CZCT_program, y = mean, fill = category)) +
+  benefits_graph2 <- ggplot2::ggplot(sim_results_summary_benefits, ggplot2::aes(x = org_program, y = mean, fill = category)) +
     ggplot2::geom_bar(stat="identity",position =ggplot2::position_dodge()) +
     ggplot2::facet_wrap(. ~ extirpated_or_extinct, scales="free") + 
     ggplot2::geom_text(ggplot2::aes(label = lab), vjust=-0.25, size = 10)+
@@ -169,41 +165,41 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   
   ## Create a data frame to identify species that are conservation breeding relevant
   sim_results_summary_costs <- sim_results_summary_costs %>%
-    dplyr::mutate(lab = dplyr::if_else(category == "Costs Offset by Funders" & CZCT_program %in% c("Half Moon Hairstreak","Taylor's Checkerspot","Banff Springs Snail",
+    dplyr::mutate(lab = dplyr::if_else(category == "Costs Offset by Funders" & org_program %in% c("Half Moon Hairstreak","Taylor's Checkerspot","Banff Springs Snail",
                                                                                                    "Whitebark pine","Spotted Owl (caurina subspecies)","Boreal Felt Lichen","Dense-flowered Lupine","Contorted-pod Evening-Primrose",
                                                                                                    "Dakota Skipper","Oregon Spotted Frog","Caribou",
                                                                                                    # "Southern Mountain Caribou","Pacific Pond Turtle"), "   B", ""))
                                                                                                    "Pacific Pond Turtle"), "   B", ""))
   
   # # Change the Boreal Caribou label to Woodland caribou
-  # results_cost_organization$CZCT_program <- as.character(results_cost_organization$CZCT_program) # remove the factor levels
-  # results_cost_organization$CZCT_program[which(results_cost_organization$CZCT_program == "Boreal Caribou")] <- "Woodland Caribou"
-  # sim_results_summary_costs$CZCT_program <- as.character(sim_results_summary_costs$CZCT_program) # remove the factor levels
-  # sim_results_summary_costs$CZCT_program[which(sim_results_summary_costs$CZCT_program == "Boreal Caribou")] <- "Woodland Caribou"
+  # results_cost_organization$org_program <- as.character(results_cost_organization$org_program) # remove the factor levels
+  # results_cost_organization$org_program[which(results_cost_organization$org_program == "Boreal Caribou")] <- "Woodland Caribou"
+  # sim_results_summary_costs$org_program <- as.character(sim_results_summary_costs$org_program) # remove the factor levels
+  # sim_results_summary_costs$org_program[which(sim_results_summary_costs$org_program == "Boreal Caribou")] <- "Woodland Caribou"
   
-  # # Reorder the factor levels for the CZCT program so that they are ordered by global benefits
-  # sim_results_summary_costs$CZCT_program <- factor(sim_results_summary_costs$CZCT_program, 
-  #                                                  levels=unique(results_cost_organization$CZCT_program[order(results_cost_organization$mean)]), ordered=TRUE)
+  # # Reorder the factor levels for the org program so that they are ordered by global benefits
+  # sim_results_summary_costs$org_program <- factor(sim_results_summary_costs$org_program, 
+  #                                                  levels=unique(results_cost_organization$org_program[order(results_cost_organization$mean)]), ordered=TRUE)
   # 
   
   
   # Add triage cateogry
-  # CZCT_program_triage$triage_category
+  # org_program_triage$triage_category
   # sim_results_summary_costs$triage_category <- NA # initalize
-  # sim_results_summary_costs$triage_category <- CZCT_program_triage$triage_category[match(sim_results_summary_costs$CZCT_program, CZCT_program_triage$CZCT_program)]
+  # sim_results_summary_costs$triage_category <- org_program_triage$triage_category[match(sim_results_summary_costs$org_program, org_program_triage$org_program)]
   
-  # Reorder the factor levels for the CZCT program so that they are ordered by triage category first and then global benefits.
-  results_benefit_global$CZCT_program <- as.character(results_benefit_global$CZCT_program) # remove the factor levels
-  # sim_results_summary_costs$CZCT_program <- factor(sim_results_summary_costs$CZCT_program, 
-  #                                                     levels=unique(results_benefit_global$CZCT_program[order(sim_results_summary_costs$triage_category,
+  # Reorder the factor levels for the org program so that they are ordered by triage category first and then global benefits.
+  results_benefit_global$org_program <- as.character(results_benefit_global$org_program) # remove the factor levels
+  # sim_results_summary_costs$org_program <- factor(sim_results_summary_costs$org_program, 
+  #                                                     levels=unique(results_benefit_global$org_program[order(sim_results_summary_costs$triage_category,
   #                                                                                                             -sim_results_summary_costs$mean, decreasing = FALSE)]), ordered=TRUE)
   
-  sim_results_summary_costs$CZCT_program <- factor(sim_results_summary_costs$CZCT_program, 
-                                                   levels=unique(results_benefit_global$CZCT_program[order(-sim_results_summary_costs$mean, decreasing = FALSE)]), ordered=TRUE)
+  sim_results_summary_costs$org_program <- factor(sim_results_summary_costs$org_program, 
+                                                   levels=unique(results_benefit_global$org_program[order(-sim_results_summary_costs$mean, decreasing = FALSE)]), ordered=TRUE)
   
   # Make the graph
-  costs_graph <- ggplot2::ggplot(sim_results_summary_costs, ggplot2::aes(x = CZCT_program, y = mean/1000, alpha = category)) +
-    # costs_graph <- ggplot(sim_results_summary_costs, aes(x = CZCT_program, y = mean/1000, alpha = category, color = triage_category)) +
+  costs_graph <- ggplot2::ggplot(sim_results_summary_costs, ggplot2::aes(x = org_program, y = mean/1000, alpha = category)) +
+    # costs_graph <- ggplot(sim_results_summary_costs, aes(x = org_program, y = mean/1000, alpha = category, color = triage_category)) +
     ggplot2::geom_bar(stat="identity",position ="identity") +
     ggplot2::scale_alpha_manual(values=c(1, .3)) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=P5/1000, ymax=P95/1000), width=.1, color = "black") +
@@ -232,14 +228,14 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   extirpated_or_extinct <- c(species_extirpated_national, species_extinct_global)
   
   sim_results_summary_costs$extirpated_or_extinct <- "Extant" # initialize
-  sim_results_summary_costs$extirpated_or_extinct[is.na(match(sim_results_summary_costs$CZCT_program, extirpated_or_extinct)) == FALSE] <- "EX/EW" # initialize
+  sim_results_summary_costs$extirpated_or_extinct[is.na(match(sim_results_summary_costs$org_program, extirpated_or_extinct)) == FALSE] <- "EX/EW" # initialize
   
   sim_results_summary_costs$extirpated_or_extinct <- factor(sim_results_summary_costs$extirpated_or_extinct, 
                                                             levels = c("Extant", "EX/EW"))
   
   
-  costs_graph2 <- ggplot2::ggplot(sim_results_summary_costs, ggplot2::aes(x = CZCT_program, y = mean/1000, alpha = category)) +
-    # costs_graph <- ggplot(sim_results_summary_costs, aes(x = CZCT_program, y = mean/1000, alpha = category, color = triage_category)) +
+  costs_graph2 <- ggplot2::ggplot(sim_results_summary_costs, ggplot2::aes(x = org_program, y = mean/1000, alpha = category)) +
+    # costs_graph <- ggplot(sim_results_summary_costs, aes(x = org_program, y = mean/1000, alpha = category, color = triage_category)) +
     ggplot2::geom_bar(stat="identity",position ="identity") +
     ggplot2::facet_wrap(. ~ extirpated_or_extinct, scales="free") + 
     ggplot2::scale_alpha_manual(values=c(1, .3)) +
@@ -309,25 +305,25 @@ graph_BCR <- function(results_overall, inputs){
   ## Make a panel figure with non-standardized BCR (change in persistence per dollar)
   
   # # Change the Boreal Caribou label to Woodland caribou
-  # results_overall$CZCT_program <- as.character(results_overall$CZCT_program) # remove the factor levels
-  # results_overall$CZCT_program[which(results_overall$CZCT_program == "Boreal Caribou")] <- "Woodland Caribou"
+  # results_overall$org_program <- as.character(results_overall$org_program) # remove the factor levels
+  # results_overall$org_program[which(results_overall$org_program == "Boreal Caribou")] <- "Woodland Caribou"
   
   # Order the species by rank
-  # results_overall$CZCT_program <- factor(results_overall$CZCT_program, 
-  #                                                   levels=unique(results_overall$CZCT_program[order(results_overall$BCR_national_EV_rank)]), ordered=TRUE)
+  # results_overall$org_program <- factor(results_overall$org_program, 
+  #                                                   levels=unique(results_overall$org_program[order(results_overall$BCR_national_EV_rank)]), ordered=TRUE)
   
   # Add triage cateogry
-  # CZCT_program_triage$triage_category
+  # org_program_triage$triage_category
   # results_overall$triage_category <- NA # initalize
-  # results_overall$triage_category <- CZCT_program_triage$triage_category[match(results_overall$CZCT_program, CZCT_program_triage$CZCT_program)]
+  # results_overall$triage_category <- org_program_triage$triage_category[match(results_overall$org_program, org_program_triage$org_program)]
   
-  # Reorder the factor levels for the CZCT program so that they are ordered by triage category first and then BCR national rank
-  results_benefit_global$CZCT_program <- as.character(results_benefit_global$CZCT_program) # remove the factor levels
-  # results_overall$CZCT_program <- factor(results_overall$CZCT_program, 
-  #                                                  levels=unique(results_benefit_global$CZCT_program[order(results_overall$triage_category,
+  # Reorder the factor levels for the org program so that they are ordered by triage category first and then BCR national rank
+  results_benefit_global$org_program <- as.character(results_benefit_global$org_program) # remove the factor levels
+  # results_overall$org_program <- factor(results_overall$org_program, 
+  #                                                  levels=unique(results_benefit_global$org_program[order(results_overall$triage_category,
   #                                                                                                          -results_overall$weighted_BCRs, decreasing = FALSE)]), ordered=TRUE)
-  results_overall$CZCT_program <- factor(results_overall$CZCT_program, 
-                                         levels=unique(results_benefit_global$CZCT_program[order(-results_overall$weighted_BCRs, decreasing = FALSE)]), ordered=TRUE)
+  results_overall$org_program <- factor(results_overall$org_program, 
+                                         levels=unique(results_benefit_global$org_program[order(-results_overall$BCR_national_EV, decreasing = FALSE)]), ordered=TRUE)
   
   
   
@@ -337,8 +333,8 @@ graph_BCR <- function(results_overall, inputs){
   colnames(BCR_summary)[which(colnames(BCR_summary) == "category")] <- "Category"
   
   # Create figure
-  # BCR_per_cad <- ggplot(BCR_summary, aes(x = CZCT_program, y = value*100000, alpha = Category,  color = triage_category)) +
-  BCR_per_cad <- ggplot2::ggplot(BCR_summary, ggplot2::aes(x = CZCT_program, y = value*100000, alpha = Category)) +
+  # BCR_per_cad <- ggplot(BCR_summary, aes(x = org_program, y = value*100000, alpha = Category,  color = triage_category)) +
+  BCR_per_cad <- ggplot2::ggplot(BCR_summary, ggplot2::aes(x = org_program, y = value*100000, alpha = Category)) +
     ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
     ggplot2::scale_alpha_manual(values=c(1,.3)) +
     ggplot2::labs(x = "Species Program",
@@ -361,20 +357,20 @@ graph_BCR <- function(results_overall, inputs){
   
   # Add triage cateogry
   # results_BCR_all$triage_category <- NA # initalize
-  # results_BCR_all$triage_category <- CZCT_program_triage$triage_category[match(results_BCR_all$CZCT_program, CZCT_program_triage$CZCT_program)]
+  # results_BCR_all$triage_category <- org_program_triage$triage_category[match(results_BCR_all$org_program, org_program_triage$org_program)]
   # 
-  # Reorder the factor levels for the CZCT program so that they are ordered by triage category first and then BCR national rank
-  # results_BCR_all$CZCT_program <- factor(results_BCR_all$CZCT_program, 
-  #                                        levels=unique(results_BCR_all$CZCT_program[order(results_overall$triage_category,
+  # Reorder the factor levels for the org program so that they are ordered by triage category first and then BCR national rank
+  # results_BCR_all$org_program <- factor(results_BCR_all$org_program, 
+  #                                        levels=unique(results_BCR_all$org_program[order(results_overall$triage_category,
   #                                                                                         -results_overall$weighted_BCRs, decreasing = FALSE)]), ordered=TRUE)
   # 
   # 
   # # Order the species by rank
-  # results_BCR_all$CZCT_program <- factor(results_BCR_all$CZCT_program, 
-  #                                        levels=unique(results_overall$CZCT_program[order(results_overall$BCR_national_EV_rank)]), ordered=TRUE)
+  # results_BCR_all$org_program <- factor(results_BCR_all$org_program, 
+  #                                        levels=unique(results_overall$org_program[order(results_overall$BCR_national_EV_rank)]), ordered=TRUE)
   
   
-  BCR_per_cad2 <- ggplot2::ggplot(results_BCR_all, ggplot2::aes(x = CZCT_program, y = mean, fill = category, color = triage_category)) +
+  BCR_per_cad2 <- ggplot2::ggplot(results_BCR_all, ggplot2::aes(x = org_program, y = mean, fill = category, color = triage_category)) +
     ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
     # geom_text(aes(label = lab), vjust=-0.25, size = 10)+
     #scale_colour_manual(values=c("#000000")) +
@@ -404,12 +400,12 @@ graph_BCR <- function(results_overall, inputs){
   extirpated_or_extinct <- c(species_extirpated_national, species_extinct_global)
   
   BCR_summary$extirpated_or_extinct <- "Extant" # initialize
-  BCR_summary$extirpated_or_extinct[is.na(match(BCR_summary$CZCT_program, extirpated_or_extinct)) == FALSE] <- "EX/EW" # initialize
+  BCR_summary$extirpated_or_extinct[is.na(match(BCR_summary$org_program, extirpated_or_extinct)) == FALSE] <- "EX/EW" # initialize
   
   BCR_summary$extirpated_or_extinct <- factor(BCR_summary$extirpated_or_extinct, 
                                               levels = c("Extant", "EX/EW"))
   
-  BCR_per_cad3 <- ggplot2::ggplot(BCR_summary, ggplot2::aes(x = CZCT_program, y = value*100000, alpha = Category)) +
+  BCR_per_cad3 <- ggplot2::ggplot(BCR_summary, ggplot2::aes(x = org_program, y = value*100000, alpha = Category)) +
     ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
     ggplot2::facet_wrap(. ~ extirpated_or_extinct, scales="free") + 
     ggplot2::scale_alpha_manual(values=c(1,.3)) +

@@ -1,8 +1,16 @@
 #This file contains the main cost-benefit functions 
 #Dylan Cole
-#July 2021
+#September 2021
 #Incorporated code written by Laura Keating (July 2021) 
 
+
+
+#####Cost Benefit Analysis #####
+
+#### Benefit Options #####
+#Users are able to select different metrics to examine the cost/benefit effectiveness
+
+######## Analysis for calculating cost benefit ratios based only on conservation gains ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
@@ -12,24 +20,13 @@
 #' @param sensitivity TO DO
 #' @return TO DO
 #' 
-
-#####Cost Benefit Analysis #####
-
-
-
-
-#### Benefit Options #####
-#Users are able to select different metrics to examine the cost/benefit effectiveness
-
-######## Analysis for calculating cost benefit ratios based only on conservation gains ########
-
 cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -178,30 +175,32 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
   results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
   
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
-  
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
               results_benefit_national, results_benefit_global, 
               results_BCR_national,
               results_BCR_global,
               dat_list))
+  
+  ##### Sensitivity Analysis ########
 } #End of cba_cgain function
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations
 cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, sensitivity){ 
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -348,15 +347,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
   # Calculate where would rank for each of the national and global
   results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
-  
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
-  
+
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
               results_benefit_national, results_benefit_global, 
@@ -365,9 +356,16 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
               dat_list)) 
 } # End of cba_cgain_longtermasp function simulation
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ######## Analysis for calculating cost benefit ratios based only on conservation gains binned into high, medium, low, zero gains ########
-#### Note - Need to determine how to bin it - After talks with Jana it is based on both conservation gain and current GS
 cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, sensitivity){
   
   ##### Creating empty df to hold results #####
@@ -563,7 +561,6 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     
   }
   
-  
   ######## Calculating ranking #####
   #Based on factor categories
   results_overall$BCR_national_EV_rank<-order(order(factor(results_overall$bin_cgainNational, levels=c("High","Medium", "Low", "Zero" ), ordered=TRUE),
@@ -575,19 +572,9 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
   #results_overall$BCR_national_EV_rank<-frank(results_overall, bin_cgainNational, -BCR_national_EV, ties.method="average")
   #results_overall$BCR_global_EV_rank<-frank(results_overall, bin_cgainGlobal, -BCR_global_EV, ties.method="average")
   
-  
-  
   # Calculate where would rank for each of the national and global
   #results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   #results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
-  
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  #results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  #results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
   
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
@@ -597,7 +584,15 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
               dat_list)) 
 } # End of cba_cgain_binnedbycgain
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations binned by current GS ########
 
 cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_score_max, sensitivity){
@@ -605,7 +600,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -798,14 +793,6 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
   results_overall$BCR_national_EV_rank<-frank(results_overall, bin_GScurrentNational, -BCR_national_EV, ties.method="average")
   results_overall$BCR_global_EV_rank<-frank(results_overall, bin_GScurrentGlobal, -BCR_global_EV, ties.method="average")
   
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- frank(results_overall, currentGS_bin,-weighted_BCRs)
-  
-  
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
               results_benefit_national, results_benefit_global, 
@@ -814,7 +801,15 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
               dat_list)) 
 } # End of cba_cgain_longtermasp_binnedbyGS function simulation
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS for extant species only ########
 
 cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensitivity){
@@ -823,7 +818,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -976,15 +971,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
   # Calculate where would rank for each of the national and global
   results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
-  
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
-  
+
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
               results_benefit_national, results_benefit_global, 
@@ -994,7 +981,15 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
   
 } #End cba_cgain_currentGS function simulation
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS for extant species only  ########
 
 cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score_max, sensitivity){
@@ -1004,7 +999,7 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -1156,14 +1151,6 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
   results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
   
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
-  
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
               results_benefit_national, results_benefit_global, 
@@ -1173,7 +1160,15 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
   
 } # End of cba_cgain_longtermasp_currentGS function simulation
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS plus arbitrary epsilon ########
 
 cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max, sensitivity){
@@ -1182,7 +1177,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -1330,14 +1325,6 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
   results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
   
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
-  
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
               results_benefit_national, results_benefit_global, 
@@ -1346,7 +1333,15 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
               dat_list)) 
 } #End cba_cgain_currentgs_epsilon function simulation
 
-
+#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' 
+#' 
+#' @param org_programs A vector of the species names included in the analysis
+#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
+#' @param functional_score_max TO DO
+#' @param sensitivity TO DO
+#' @return TO DO
+#' 
 ####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS plus arbitrary epsilon ########
 
 cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, functional_score_max, sensitivity){
@@ -1355,7 +1350,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
                                  "BCR_global_EV","BCR_global_EV_rank", 
-                                 "weighted_BCRs", "weighted_BCRs_rank")
+                                 )
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -1504,14 +1499,6 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
   # Calculate where would rank for each of the national and global
   results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
   results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
-  
-  # Combine the national and global BCR using an equal weights multiplicative approach as per
-  # https://pubsonline.informs.org/doi/pdf/10.1287/ited.2013.0124
-  results_overall$weighted_BCRs <- results_overall$BCR_national_EV*results_overall$BCR_global_EV
-  
-  # Rank the CZCT programs from largest to smallest by their weighted BCR.
-  results_overall$weighted_BCRs_rank <- rank(-results_overall$weighted_BCRs)
-  
   
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
