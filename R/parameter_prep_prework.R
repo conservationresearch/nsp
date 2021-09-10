@@ -42,7 +42,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                           "max_external_funding", "external_funding", "cost_organization")
   
   dat_benefit <- as.data.frame(matrix(nrow=number_of_simulations, ncol=6))
-  colnames(dat_benefit) <- c("GSGainWithDynamicBaseline", "GSlongtermAspiration", 
+  colnames(dat_benefit) <- c("GSGainGplusD", "GSlongtermAspiration", 
                              "GScurrentNational", "GScurrentGlobal",
                              "organization_portion_benefit", 
                              "species_range_pct_in_nation")
@@ -254,18 +254,18 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   
   # Benefits
   
-  row_GSGainWithDynamicBaseline <- which(inputs_parameter_prep$subcategory == "GSGainWithDynamicBaseline")
-  benefit_low <- as.numeric(inputs_parameter_prep$lowP5[row_GSGainWithDynamicBaseline])
-  benefit_base <- as.numeric(inputs_parameter_prep$baseP50[row_GSGainWithDynamicBaseline])
-  benefit_high <- as.numeric(inputs_parameter_prep$highP95[row_GSGainWithDynamicBaseline])
+  row_GSGainGplusD <- which(inputs_parameter_prep$subcategory == "GSGainGplusD")
+  benefit_low <- as.numeric(inputs_parameter_prep$lowP5[row_GSGainGplusD])
+  benefit_base <- as.numeric(inputs_parameter_prep$baseP50[row_GSGainGplusD])
+  benefit_high <- as.numeric(inputs_parameter_prep$highP95[row_GSGainGplusD])
   
-  dat_benefit$GSGainWithDynamicBaseline <- metalogSelectBenefit(P5 = benefit_low,
+  dat_benefit$GSGainGplusD <- metalogSelectBenefit(P5 = benefit_low,
                                                                 P50 = benefit_base,
                                                                 P95 = benefit_high,
                                                                 number_of_simulations = number_of_simulations)
   
   #In rare scenario where benefit < 0, making it 0 
-  dat_benefit$GSGainWithDynamicBaseline[which(dat_benefit$GSGainWithDynamicBaseline <0)] <- 0
+  dat_benefit$GSGainGplusD[which(dat_benefit$GSGainGplusD <0)] <- 0
   
   # Long-term aspiration
   row_longterm_aspiration <- which(inputs_parameter_prep$subcategory== "GSlongtermAspiration")

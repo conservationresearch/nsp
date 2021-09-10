@@ -35,6 +35,7 @@ endemic_species <- c("Banff Springs Snail","Maritime Ringlet","Atlantic whitefis
 
 ### Load the inputs
 inputs <- newSpeciesPrioritization::inputs # lazy loaded with package
+
 ### Identify the program names
 org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
 

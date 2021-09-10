@@ -75,7 +75,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainWithDynamicBaseline
+    dat$GS_Benefit_national <- dat$GSGainGplusD
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -85,7 +85,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -247,7 +247,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainWithDynamicBaseline / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_national <- dat$GSGainGplusD / dat$GSlongtermAspiration * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -257,7 +257,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -420,7 +420,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainWithDynamicBaseline
+    dat$GS_Benefit_national <- dat$GSGainGplusD
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -430,7 +430,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -524,15 +524,15 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
         (results_overall$mean_GScurrentNational[which(results_overall$org_program == org_program)] == 0)  | 
         (results_overall$mean_cgain_national_org[which(results_overall$org_program==org_program)] > 1 * 
          results_overall$mean_GScurrentNational[which(results_overall$org_program == org_program)]))
-    {results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<-"High"
+    {results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<-1
     } else if (results_overall$mean_cgain_national_org[which(results_overall$org_program==org_program)] >= 10 && 
                results_overall$mean_cgain_national_org[which(results_overall$org_program==org_program)] < 40){
-      results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<- "Medium"
+      results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<- 2
     } else if (results_overall$mean_cgain_national_org[which(results_overall$org_program==org_program)] > 0 && 
                results_overall$mean_cgain_national_org[which(results_overall$org_program==org_program)] <= 10) {
-      results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<-"Low"
+      results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<- 3
     } else if (results_overall$mean_cgain_national_org[which(results_overall$org_program==org_program)] == 0)  {
-      results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<-"Zero"
+      results_overall$bin_cgainNational[which(results_overall$org_program==org_program)]<- 4
     }
     
     #Calculating mean global gains for binning
@@ -547,34 +547,36 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
         (results_overall$mean_GScurrentGlobal[which(results_overall$org_program == org_program)] == 0)  | 
         (results_overall$mean_cgain_global_org[which(results_overall$org_program==org_program)] > 1 * 
          results_overall$mean_GScurrentGlobal[which(results_overall$org_program == org_program)]))
-    {results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<-"High"
+    {results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<- 1
     } else if (results_overall$mean_cgain_global_org[which(results_overall$org_program==org_program)] >= 10 && 
                results_overall$mean_cgain_global_org[which(results_overall$org_program==org_program)] < 40){
-      results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<- "Medium"
+      results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<- 2
     } else if (results_overall$mean_cgain_global_org[which(results_overall$org_program==org_program)] > 0 && 
                results_overall$mean_cgain_global_org[which(results_overall$org_program==org_program)] <= 10) {
-      results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<-"Low"
+      results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<- 3
     } else if (results_overall$mean_cgain_global_org[which(results_overall$org_program==org_program)] == 0)  {
-      results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<-"Zero"
+      results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<- 4
     }
     
     
   }
   
-  ######## Calculating ranking #####
-  #Based on factor categories
-  results_overall$BCR_national_EV_rank<-order(order(factor(results_overall$bin_cgainNational, levels=c("High","Medium", "Low", "Zero" ), ordered=TRUE),
-                                                    -results_overall$BCR_national_EV))
-  results_overall$BCR_global_EV_rank<-order(order(factor(results_overall$bin_cgainGlobal, levels=c("High", "Medium","Low","Zero"), ordered=TRUE),
-                                                  -results_overall$BCR_global_EV))
+  #Ranking of programs first by bin then by BCR
+  results_overall$BCR_national_EV_rank<-data.table::frank(results_overall, bin_cgainNational, -BCR_national_EV, ties.method="average")
+  results_overall$BCR_global_EV_rank<-data.table::frank(results_overall, bin_cgainGlobal, -BCR_global_EV,ties.method="average")
   
-  #Based on numerical categories
-  #results_overall$BCR_national_EV_rank<-frank(results_overall, bin_cgainNational, -BCR_national_EV, ties.method="average")
-  #results_overall$BCR_global_EV_rank<-frank(results_overall, bin_cgainGlobal, -BCR_global_EV, ties.method="average")
+  #Relabeling numeric bins to categorical names
+  results_overall$bin_cgainNational[which(results_overall$bin_cgainNational==1)] <- "High"
+  results_overall$bin_cgainNational[which(results_overall$bin_cgainNational==2)] <- "Medium"
+  results_overall$bin_cgainNational[which(results_overall$bin_cgainNational==3)] <- "Low"
+  results_overall$bin_cgainNational[which(results_overall$bin_cgainNational==4)] <- "Zero"
   
-  # Calculate where would rank for each of the national and global
-  #results_overall$BCR_national_EV_rank <- rank(-results_overall$BCR_national_EV)
-  #results_overall$BCR_global_EV_rank <- rank(-results_overall$BCR_global_EV)
+  
+  results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==1)] <- "High"
+  results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==2)] <- "Medium"
+  results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==3)] <- "Low"
+  results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==4)] <- "Zero"
+ 
   
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
@@ -597,9 +599,9 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
 
 cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_score_max, sensitivity){
   ##### Creating empty df to hold results #####
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank"
                                  )
   results_overall$org_program <- org_programs 
   
@@ -631,7 +633,6 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
   #Initializing columns for binning process
   results_overall$mean_GScurrentNational <- NA
   results_overall$mean_GScurrentGlobal <- NA
-  results_overall$currentGS_bin <- NA
   
   # initialize something to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
@@ -652,7 +653,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainWithDynamicBaseline / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_national <- dat$GSGainGplusD / dat$GSlongtermAspiration * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -662,7 +663,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -789,9 +790,25 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
       results_overall$bin_GScurrentGlobal[which(results_overall$org_program==org_program)]<-6
     }
   }
+  
   ######## Calculating ranking ########
-  results_overall$BCR_national_EV_rank<-frank(results_overall, bin_GScurrentNational, -BCR_national_EV, ties.method="average")
-  results_overall$BCR_global_EV_rank<-frank(results_overall, bin_GScurrentGlobal, -BCR_global_EV, ties.method="average")
+  results_overall$BCR_national_EV_rank<-data.table::frank(results_overall, bin_GScurrentNational, -BCR_national_EV, ties.method="average")
+  results_overall$BCR_global_EV_rank<-data.table::frank(results_overall, bin_GScurrentGlobal, -BCR_global_EV, ties.method="average")
+  
+  #Relabeling numeric ranks to categorical names
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==1)] <- "Extinct in the Wild"
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==2)] <- "Crtically Depleted"
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==3)] <- "Largely Depleted"
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==4)] <- "Moderately Depleted"
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==5)] <- "Slightly Depleted"
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==6)] <- "Fully Recovered"
+  
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==1)] <- "Extinct in the Wild"
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==2)] <- "Crtically Depleted"
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==3)] <- "Largely Depleted"
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==4)] <- "Moderately Depleted"
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==5)] <- "Slightly Depleted"
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==6)] <- "Fully Recovered"
   
   return(list(results_overall, 
               results_cost_total, results_cost_organization,
@@ -872,7 +889,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
       # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
       # Calculate our portion of the benefit
       
-      dat$GS_Benefit_national <- dat$GSGainWithDynamicBaseline
+      dat$GS_Benefit_national <- dat$GSGainGplusD
       
       dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit) / dat$GScurrentNational
       
@@ -882,7 +899,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
       GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
       
       # Calculate what the assessed numerator is
-      GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+      GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
       
       # Calculate how many spatial units would be in the larger scale if they are
       # proportional to the smaller scale and the range
@@ -1051,7 +1068,7 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
       # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
       # Calculate our portion of the benefit
       
-      dat$GS_Benefit_national <- (dat$GSGainWithDynamicBaseline / dat$GSlongtermAspiration) * 100
+      dat$GS_Benefit_national <- (dat$GSGainGplusD / dat$GSlongtermAspiration) * 100
       
       dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / dat$GScurrentNational
       
@@ -1061,7 +1078,7 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
       GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
       
       # Calculate what the assessed numerator is
-      GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+      GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
       
       # Calculate how many spatial units would be in the larger scale if they are
       # proportional to the smaller scale and the range
@@ -1225,7 +1242,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     # Calculate organization portion of the benefit
     
     # Adding 0.1 to account for extirpated species 
-    dat$GS_Benefit_national <- dat$GSGainWithDynamicBaseline 
+    dat$GS_Benefit_national <- dat$GSGainGplusD 
     
     dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / (dat$GScurrentNational + 0.1)
     
@@ -1235,7 +1252,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -1399,7 +1416,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- (dat$GSGainWithDynamicBaseline / dat$GSlongtermAspiration) * 100
+    dat$GS_Benefit_national <- (dat$GSGainGplusD / dat$GSlongtermAspiration) * 100
     
     dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit) / (dat$GScurrentNational+0.1)
     
@@ -1409,7 +1426,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainWithDynamicBaseline * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
