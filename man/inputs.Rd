@@ -8,7 +8,7 @@ Populate with randomly drawn values from the relevant distributions for each unc
 Also does some preliminary calculations on costs and includes the results as they are used
 for calculating the fundability parameter draws.}
 \format{
-An object of class \code{data.frame} with 192 rows and 15 columns.
+An object of class \code{data.frame} with 202 rows and 15 columns.
 }
 \usage{
 inputs

@@ -10,22 +10,27 @@
 #### Benefit Options #####
 #Users are able to select different metrics to examine the cost/benefit effectiveness
 
-######## Analysis for calculating cost benefit ratios based only on conservation gains ########
+
+
+######## Analysis for calculating cost benefit ratios based only on simple conservation gains ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank"
                                  )
   results_overall$org_program <- org_programs 
   
@@ -75,7 +80,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainGplusD
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -85,7 +90,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -95,10 +100,10 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Relabelling for consistency
-    dat$GS_Benefit_global <- dat$GSGlobalGainWithDynamicBaseline
+    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -124,7 +129,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     # Store the various pieces of the results separately for easy use later
     
     # National
-    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -138,7 +143,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
     
-    results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+    results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
     
     # Costs
     
@@ -182,24 +187,28 @@ cba_cgain<-function(org_programs, inputs, functional_score_max, sensitivity){
               results_BCR_global,
               dat_list))
   
-  ##### Sensitivity Analysis ########
 } #End of cba_cgain function
 
+
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
 cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, sensitivity){ 
+  
   ##### Creating empty df to hold results #####
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank" 
                                  )
   results_overall$org_program <- org_programs 
   
@@ -247,7 +256,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainGplusD / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermAspiration * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -257,7 +266,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -267,10 +276,10 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Rescaling to long term aspirations
-    dat$GS_Benefit_global <- dat$GSGlobalGainWithDynamicBaseline / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD / dat$GSlongtermAspiration * 100
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -297,7 +306,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     # Store the various pieces of the results separately for easy use later
     
     # National
-    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -311,7 +320,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
     
-    results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+    results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
     
     # Costs
     
@@ -356,17 +365,21 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
               dat_list)) 
 } # End of cba_cgain_longtermasp function simulation
 
+
+######## Analysis for calculating cost benefit ratios based only on conservation gains binned into high, medium, low, zero gains ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-######## Analysis for calculating cost benefit ratios based only on conservation gains binned into high, medium, low, zero gains ########
-cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 9))
@@ -420,7 +433,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainGplusD
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -430,7 +443,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -440,10 +453,10 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Relabelling for consistency
-    dat$GS_Benefit_global <- dat$GSGlobalGainWithDynamicBaseline
+    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -469,7 +482,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     # Store the various pieces of the results separately for easy use later
     
     # National
-    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -483,7 +496,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
     
-    results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+    results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
     
     # Costs
     
@@ -571,7 +584,6 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
   results_overall$bin_cgainNational[which(results_overall$bin_cgainNational==3)] <- "Low"
   results_overall$bin_cgainNational[which(results_overall$bin_cgainNational==4)] <- "Zero"
   
-  
   results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==1)] <- "High"
   results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==2)] <- "Medium"
   results_overall$bin_cgainGlobal[which(results_overall$bin_cgainGlobal==3)] <- "Low"
@@ -586,18 +598,22 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max, 
               dat_list)) 
 } # End of cba_cgain_binnedbycgain
 
+
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations binned by current GS ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations binned by current GS ########
-
-cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_score_max){
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
@@ -653,7 +669,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainGplusD / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermAspiration * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -663,7 +679,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -673,10 +689,10 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Rescaling to long term aspirations
-    dat$GS_Benefit_global <- dat$GSGlobalGainWithDynamicBaseline / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD / dat$GSlongtermAspiration * 100
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -703,7 +719,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     # Store the various pieces of the results separately for easy use later
     
     # National
-    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -717,7 +733,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
     
-    results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+    results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
     
     # Costs
     
@@ -746,6 +762,8 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     # Store the dat in a list
     dat_list[[i]] <- dat
     
+    
+    results_overall$mean_cgain_national_org[which(results_overall$org_program == org_program)] <- mean(dat$benefit_national_org)
     #Calculating mean currentGS for national binning
     results_overall$mean_GScurrentNational[which(results_overall$org_program == org_program)] <- mean(dat$GScurrentNational)
     
@@ -768,6 +786,8 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
       results_overall$bin_GScurrentNational[which(results_overall$org_program==org_program)]<-6
     }
     
+    
+    results_overall$mean_cgain_global_org[which(results_overall$org_program == org_program)] <- mean(dat$benefit_global_org)
     #Calculating mean currentGS for global binning
     results_overall$mean_GScurrentGlobal[which(results_overall$org_program == org_program)]<- mean(dat$GScurrentGlobal)
     
@@ -797,14 +817,14 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
   
   #Relabeling numeric ranks to categorical names
   results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==1)] <- "Extinct in the Wild"
-  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==2)] <- "Crtically Depleted"
+  results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==2)] <- "Critically Depleted"
   results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==3)] <- "Largely Depleted"
   results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==4)] <- "Moderately Depleted"
   results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==5)] <- "Slightly Depleted"
   results_overall$bin_GScurrentNational[which(results_overall$bin_GScurrentNational==6)] <- "Fully Recovered"
   
   results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==1)] <- "Extinct in the Wild"
-  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==2)] <- "Crtically Depleted"
+  results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==2)] <- "Critically Depleted"
   results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==3)] <- "Largely Depleted"
   results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==4)] <- "Moderately Depleted"
   results_overall$bin_GScurrentGlobal[which(results_overall$bin_GScurrentGlobal==5)] <- "Slightly Depleted"
@@ -818,23 +838,26 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
               dat_list)) 
 } # End of cba_cgain_longtermasp_binnedbyGS function simulation
 
+
+####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS for extant species only ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS for extant species only ########
-
-cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank"
                                  )
   results_overall$org_program <- org_programs 
   
@@ -869,37 +892,35 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    # Cannot divide by 0, so if 0 is found in GScurrentNational, skips this species. 
     if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0)
-    {print(paste("Skipping cgain_currentGS simulation for", org_program))
-      next}
-    else {
-      print(paste("Running cgain_currentGS simulation for", org_program))
-      
+    {print(paste(org_program, "is extirpated. Cannot divide by Current GS of 0, therefore dividing by 0.001"))}
+    else {print(paste("Running cba_cgain_currentGS simulation for", org_program))}
+
       # Do parameter prep from the input distributions to get one set of parameters
       # to use for each iteration
       dat <- parameter_prep(inputs = inputs,
                             org_program = org_program,
                             number_of_simulations = number_of_simulations)
+      #Rename for consistency across analysis
+      dat$GS_Benefit_national <- dat$GSGainPlusDependence
       
-      ######## Calculate the national benefit for each iteration ########
-      
-      # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
-      # Calculate our portion of the benefit
-      
-      dat$GS_Benefit_national <- dat$GSGainGplusD
-      
-      dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit) / dat$GScurrentNational
-      
+      #For extirpated species, divide by 0.001, for extant species divide by Current GS (non-zero value)
+      if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
+          && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
+          && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0){
+        dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / 0.001
+      } else {
+      dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit / dat$GScurrentNational
+      }
       ######## Calculate the global benefit for each iteration ########
       
       # Calculate what the assessed denominator is
       GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
       
       # Calculate what the assessed numerator is
-      GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+      GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
       
       # Calculate how many spatial units would be in the larger scale if they are
       # proportional to the smaller scale and the range
@@ -909,18 +930,22 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
       GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
       
       # Calculate new value for scaled global
-      dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+      dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
       
       # Relabel for consistency
-      dat$GS_Benefit_global <- dat$GSGlobalGainWithDynamicBaseline 
+      dat$GS_Benefit_global <- dat$GSGlobalGainGplusD 
       
       # Adjust the global benefit of the organization's program to reflect the organization portion by
       # multiplying the organizations global benefit vector by the vector with the percent
       # contribution from the organization. The result is the organization's global benefit of
       # the program.
-      
+      if (inputs$highP95[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
+          && inputs$baseP50[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
+          && inputs$lowP5[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0){
+        dat$benefit_global_org <-  (dat$GS_Benefit_global * dat$organization_portion_benefit ) / 0.001
+      } else {
       dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / dat$GScurrentGlobal
-      
+      }
       ######## Calculate the costs ########
       # Note: this is currently done as prework in the paramater draws function
       # But might be clearer if pull it out and put here
@@ -938,7 +963,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
       # Store the various pieces of the results separately for easy use later
       
       # National
-      results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+      results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -952,7 +977,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
       results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
       results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
       
-      results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+      results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
       
       # Costs
       
@@ -981,7 +1006,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
       # Store the dat in a list
       dat_list[[i]] <- dat
       
-    } }
+    } 
   
   ######## Calculating ranking #####
   
@@ -998,24 +1023,27 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max, sensit
   
 } #End cba_cgain_currentGS function simulation
 
+
+####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS for extant species only  ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS for extant species only  ########
-
-cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank"
                                  )
   results_overall$org_program <- org_programs 
   
@@ -1053,50 +1081,60 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
     if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0)
-    {print(paste("Skipping cgain_longtermasp_currentGS simulation for", org_program))
-      next}
-    else {print(paste("Running cgain_longtermasp_currentGS simulation for", org_program))
-      
-      # Do parameter prep from the input distributions to get one set of parameters
-      # to use for each iteration
-      dat <- parameter_prep(inputs = inputs,
-                            org_program = org_program,
-                            number_of_simulations = number_of_simulations)
-      
-      ######## Calculate the national benefit for each iteration ########
-      
-      # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
-      # Calculate our portion of the benefit
-      
-      dat$GS_Benefit_national <- (dat$GSGainGplusD / dat$GSlongtermAspiration) * 100
-      
-      dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / dat$GScurrentNational
-      
-      ######## Calculate the global benefit for each iteration ########
-      
-      # Calculate what the assessed denominator is
-      GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-      
-      # Calculate what the assessed numerator is
-      GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
-      
-      # Calculate how many spatial units would be in the larger scale if they are
-      # proportional to the smaller scale and the range
-      n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-      
-      # Calculate what the scaled denominator is
-      GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-      
-      # Calculate new value for scaled global
-      dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
-      
-      # Rescaling to long term aspirations and current global GS 
-      dat$GS_Benefit_global <- (dat$GSGlobalGainWithDynamicBaseline / dat$GSlongtermAspiration) * 100 
-      
-      # Adjust the global benefit of the organization's program to reflect the organization portion by
-      # multiplying the organizations global benefit vector by the vector with the percent
-      # contribution from the organization. The result is the organization's global benefit of
-      # the program.
+    {print(paste(org_program, "is extirpated. Cannot divide by Current GS of 0, therefore dividing by 0.001"))}
+    else {print(paste("Running cba_cgain_longtermasp_currentGS simulation for", org_program))}
+    
+    # Do parameter prep from the input distributions to get one set of parameters
+    # to use for each iteration
+    dat <- parameter_prep(inputs = inputs,
+                          org_program = org_program,
+                          number_of_simulations = number_of_simulations)
+    
+    ######## Calculate the national benefit for each iteration ########
+    
+    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
+    # Calculate our portion of the benefit
+    
+    dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermAspiration) * 100
+    if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
+        && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
+        && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0){
+      dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / 0.001
+    } else {
+      dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / dat$GScurrentNational}
+    
+    ######## Calculate the global benefit for each iteration ########
+    
+    # Calculate what the assessed denominator is
+    GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
+    
+    # Calculate what the assessed numerator is
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
+    
+    # Calculate how many spatial units would be in the larger scale if they are
+    # proportional to the smaller scale and the range
+    n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
+    
+    # Calculate what the scaled denominator is
+    GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
+    
+    # Calculate new value for scaled global
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    
+    # Rescaling to long term aspirations and current global GS 
+    dat$GS_Benefit_global <- (dat$GSGlobalGainGplusD / dat$GSlongtermAspiration) * 100 
+    
+    # Adjust the global benefit of the organization's program to reflect the organization portion by
+    # multiplying the organizations global benefit vector by the vector with the percent
+    # contribution from the organization. The result is the organization's global benefit of
+    # the program.
+    if (inputs$highP95[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
+        && inputs$baseP50[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
+        && inputs$lowP5[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0){
+      dat$benefit_global_org <-  (dat$GS_Benefit_global * dat$organization_portion_benefit ) / 0.001
+    } else {
+      dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / dat$GScurrentGlobal
+    }
       
       dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / dat$GScurrentGlobal
       
@@ -1117,22 +1155,22 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
       ######## Calculate the BCR probability-weighted average and credible intervals. ########
       # Store the various pieces of the results separately for easy use later
       
-      # National
-      results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+      # BCR National
+      results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
       
       results_overall[which(results_BCR_national$org_program == org_program), "BCR_national_EV"] <- mean(dat$BCR_national)
       
-      # Global
+      # BCR Global
       
       results_BCR_global[which(results_BCR_global$org_program == org_program), "mean"] <- mean(dat$BCR_global)
       results_BCR_global[which(results_BCR_global$org_program == org_program), "P5"] <- quantile(dat$BCR_global, 0.05)
       results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
       results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
       
-      results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+      results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
       
       # Costs
       
@@ -1161,7 +1199,7 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
       # Store the dat in a list
       dat_list[[i]] <- dat
       
-    } }
+    } 
   ######## Calculating ranking #####
   
   # Calculate where would rank for each of the national and global
@@ -1177,23 +1215,26 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
   
 } # End of cba_cgain_longtermasp_currentGS function simulation
 
+
+####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS plus arbitrary epsilon ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS plus arbitrary epsilon ########
-
-cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank" 
                                  )
   results_overall$org_program <- org_programs 
   
@@ -1242,9 +1283,9 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     # Calculate organization portion of the benefit
     
     # Adding 0.1 to account for extirpated species 
-    dat$GS_Benefit_national <- dat$GSGainGplusD 
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence 
     
-    dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / (dat$GScurrentNational + 0.1)
+    dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / (dat$GScurrentNational + epsilon)
     
     ######## Calculate the global benefit for each iteration ########
     
@@ -1252,7 +1293,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -1262,10 +1303,10 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Calcuate global benefit relative to current global GS (adding 0.1 for extirpated species)
-    dat$GS_Benefit_global <- dat$GSGlobalGainWithDynamicBaseline / (dat$GScurrentGlobal + 0.1)
+    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD / (dat$GScurrentGlobal + epsilon)
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -1275,9 +1316,23 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     dat$benefit_global_org <- dat$GS_Benefit_global * dat$organization_portion_benefit
     
     ######## Calculate the costs ########
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
     
+    # Calculate the maximum amount of external funding that our
+    # organization will accept (i.e. multiply the maximum funding proportion
+    # of total cost with the total project cost).
+    
+    dat_cost$max_external_funding <- dat_cost$max_prop_total_external_funding*dat_cost$cost_total_project
+    
+    # Take the minimum of the fundability and the maximum amount of external
+    # funding. The resulting vector is the external funding amounts.
+    
+    dat_cost$external_funding <- pmin(dat_cost$max_external_funding, dat_cost$fundability)
+    
+    # Calculate the organization project cost as the total project cost minus
+    # external funding.
+    
+    dat_cost$cost_organization <- dat_cost$cost_total_project - dat_cost$external_funding
+
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
     # Divide the organization's national benefit of the program by the
@@ -1291,7 +1346,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     # Store the various pieces of the results separately for easy use later
     
     # National
-    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -1305,7 +1360,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
     
-    results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+    results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
     
     # Costs
     
@@ -1348,25 +1403,28 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
               results_BCR_national,
               results_BCR_global,
               dat_list)) 
-} #End cba_cgain_currentgs_epsilon function simulation
+} # End cba_cgain_currentgs_epsilon function simulation
 
+
+####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS plus arbitrary epsilon ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
-#' @param org_programs A vector of the species names included in the analysis
-#' @param inputs A dataframe containing the organization's different programs costs and benefits for each species 
-#' @param functional_score_max TO DO
-#' @param sensitivity TO DO
-#' @return TO DO
-#' 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS plus arbitrary epsilon ########
-
-cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, functional_score_max, sensitivity){
+#' @param org_programs a vector of the conservation program names
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
+#' @param functional_score_max the maximum possible score for a spatial unit
+#' @return returns last output of function
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
+# Still needs unit testing
+cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
-  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 7))
+  results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank", 
+                                 "BCR_global_EV","BCR_global_EV_rank" 
                                  )
   results_overall$org_program <- org_programs 
   
@@ -1416,9 +1474,9 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- (dat$GSGainGplusD / dat$GSlongtermAspiration) * 100
+    dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermAspiration) * 100
     
-    dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit) / (dat$GScurrentNational+0.1)
+    dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit) / (dat$GScurrentNational + epsilon)
     
     ######## Calculate the global benefit for each iteration ########
     
@@ -1426,7 +1484,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
     
     # Calculate what the assessed numerator is
-    GS_numerator_assessed <- dat$GSGainGplusD * GS_denominator_assessed/100
+    GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
     
     # Calculate how many spatial units would be in the larger scale if they are
     # proportional to the smaller scale and the range
@@ -1436,22 +1494,20 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainWithDynamicBaseline <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Rescaling to long term aspirations and current global GS plus epsilon
-    dat$GS_Benefit_global <- (dat$GSGlobalGainWithDynamicBaseline / dat$GSlongtermAspiration) * 100 
+    dat$GS_Benefit_global <- (dat$GSGlobalGainGplusD / dat$GSlongtermAspiration) * 100 
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
     # contribution from the organization. The result is the organization's global benefit of
-    # the program. Followed by rescaling to currentGS plus 0.1 for extirpated species
+    # the program. Followed by rescaling to currentGS plus epsilon
     
-    dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / (dat$GScurrentGlobal+0.1)
+    dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / (dat$GScurrentGlobal + epsilon)
     
     
-    ######## Calculate the costs ########
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
+
     
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
@@ -1466,7 +1522,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     # Store the various pieces of the results separately for easy use later
     
     # National
-    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) # TO DO: Consider deleting these and just storing in overall unless planning to plot theses
+    results_BCR_national[which(results_BCR_national$org_program == org_program), "mean"] <- mean(dat$BCR_national) 
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P5"] <- quantile(dat$BCR_national, 0.05)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P50"] <- quantile(dat$BCR_national, 0.50)
     results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
@@ -1480,7 +1536,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P50"] <- quantile(dat$BCR_global, 0.50)
     results_BCR_global[which(results_BCR_global$org_program == org_program), "P95"] <- quantile(dat$BCR_global, 0.95)
     
-    results_overall[which(results_BCR_national$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
+    results_overall[which(results_BCR_global$org_program == org_program), "BCR_global_EV"] <- mean(dat$BCR_global)
     
     # Costs
     

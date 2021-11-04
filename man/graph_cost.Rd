@@ -2,8 +2,7 @@
 % Please edit documentation in R/figures.R
 \name{graph_cost}
 \alias{graph_cost}
-\title{STILL TO CLEAN UP CODE
-INSERT}
+\title{INSERT}
 \usage{
 graph_cost(results_cost_organization, results_cost_total, inputs)
 }
@@ -15,7 +14,6 @@ graph_cost(results_cost_organization, results_cost_total, inputs)
 \item{inputs}{TO DO: ADD DESCRIPTION}
 }
 \description{
-STILL TO CLEAN UP CODE
 INSERT
 }
 \examples{

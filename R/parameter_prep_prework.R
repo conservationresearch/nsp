@@ -1,7 +1,7 @@
 # This file contains functions related to prepping the input data
 # Dylan Cole
 # August 2021
-# Primarily using code written by Laura Keating (July 2021) with some changes/cleanup
+# Primarily using code written by Laura Keating (July 2021) with some changes and cleanup
 
 #####   parameter_prep   #####
 
@@ -15,14 +15,22 @@
 #' 
 #' 
 #' 
+######## This function performs the mo ########
+#' This function performs the parameter draws based on metalog distributions of the parameters and calculations of cost/benefit
+#' 
+#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
+#' @param org_program the current species or conservation program dictated by the cost_benefit_analysis function outlining which program is currently being prepared
+#' @param G_and_A_prop a value specifying the proportion of total cost that must be added ontop of total cost
+#' @param number_of_simulations a value specifying number of value draws for each parameter for each conservation program
+#' @return TO DO
+#' @examples
+#' # STILL TO ADD
+#'
+#' @export
 
-####Inputs loaded in here? wrapper script should include argument about where to find data?
+
 # Need to change once all ready for manuscript to 
-inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript.csv")
-
-#Outlining what are organization_programs
-#org_program <- unique(inputs$species) 
-#org_programs <- org_programs[which(org_programs != "N/A")]
+#inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v2.csv")
 
 ##### Main function #####
 parameter_prep <- function(inputs, org_program, G_and_A_prop,
@@ -42,7 +50,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                           "max_external_funding", "external_funding", "cost_organization")
   
   dat_benefit <- as.data.frame(matrix(nrow=number_of_simulations, ncol=6))
-  colnames(dat_benefit) <- c("GSGainGplusD", "GSlongtermAspiration", 
+  colnames(dat_benefit) <- c("GSGainPlusDependence", "GSlongtermAspiration", 
                              "GScurrentNational", "GScurrentGlobal",
                              "organization_portion_benefit", 
                              "species_range_pct_in_nation")
@@ -111,12 +119,14 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   }
   
   # Write a function to apply a metalog distribution to the benefit inputs   
-  
-  metalogSelectBenefit <- function(P5, P50, P95, number_of_simulations){
+  # Adding in lower_bound and upper_bound terms to see if we can separate out the bounds for currentGS (bound by 0 and 100) and the rest (which can have negative as they are metrics of change)
+  metalogSelectBenefit <- function(P5, P50, P95, lower_bound, upper_bound, number_of_simulations){
     if(P5 != P50 | P50 != P95){
       metalog_dist <- rmetalog::metalog(c(P5,P50,P95), 
                                         term_limit = 3,
-                                        bounds=c(max(-100, P5 - abs(2*P5-0.0001)), min(2*P95, 100)),  # changed from before to be more realistic for GplusD; added the -0.0001 in case the P5 is 0 since P5 and lower bound can not be the same
+                                        #Testing:
+                                        bounds=c(lower_bound, upper_bound),
+                                        #Original: bounds=c(max(-100, P5 - abs(2*P5-0.0001)), min(2*P95, 100)),  # changed from before to be more realistic for GplusD; added the -0.0001 in case the P5 is 0 since P5 and lower bound can not be the same
                                         boundedness = 'b',
                                         probs = c(0.05, 0.5, 0.95))
       results_vector <- rmetalog::rmetalog(metalog_dist, number_of_simulations, term = 3)    
@@ -169,12 +179,12 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   
   
   
-  ### 
+  ### Need to rename this
   ### Check with Jana to determine if we actually want this included in the manuscript code or just in our CZ version
   # Maximum proportion of total external funding allowed
-  max_pct_total_external_funding_low <- 100 - as.numeric(as.character(inputs$highP95[which(inputs$type == "CZ Skin in the Game")]))
-  max_pct_total_external_funding_base <- 100 - as.numeric(as.character(inputs$baseP50[which(inputs$type == "CZ Skin in the Game")]))
-  max_pct_total_external_funding_high <- 100 - as.numeric(as.character(inputs$lowP5[which(inputs$type == "CZ Skin in the Game")]))
+  max_pct_total_external_funding_low <- 100 - as.numeric(as.character(inputs$highP95[which(inputs$type == "Mandatory Organization Contribution")]))
+  max_pct_total_external_funding_base <- 100 - as.numeric(as.character(inputs$baseP50[which(inputs$type == "Mandatory Organization Contribution")]))
+  max_pct_total_external_funding_high <- 100 - as.numeric(as.character(inputs$lowP5[which(inputs$type == "Mandatory Organization Contribution")]))
   
   dat_cost$max_prop_total_external_funding <- simulate_bounded_continuous_distribution(P5 = max_pct_total_external_funding_low,
                                                                                        P50 = max_pct_total_external_funding_base,
@@ -184,23 +194,23 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                                                                        number_of_simulations = number_of_simulations)/100 # convert the results from percent to proportion
   
   
-  #Do we need this??? Should be already factored into the cost they are providing in the Excel inputs file
+  
   #NEED TO FIGURE THIS PART OUT - UNCERTAINITY LIES IN THE % of TOTAL COST THAT WILL BE ADDED ON AS EXTRA. IE. Will need an additional 15% of
   #total cost to go to G&A - so first need to calculate the project cost then take % of that and add it on to get total project cost. 
-  # General and Admin costs
-  #G_and_A_prop_total_low <- as.numeric(as.character(inputs$lowP5[which(inputs$type == "General and Administrative")]))/100 # note, our input here didn't have uncertainty but we built in the flexibility to change it later if we want to.
-  #G_and_A_prop_total_base <- as.numeric(as.character(inputs$baseP50[which(inputs$type == "General and Administrative")]))/100
-  #G_and_A_prop_total_high <- as.numeric(as.character(inputs$highP95[which(inputs$type == "General and Administrative")]))/100
+  #General and Admin costs
+  G_and_A_prop_total_low <- as.numeric(as.character(inputs$lowP5[which(inputs$type == "General and Administrative")]))/100 # note, our input here didn't have uncertainty but we built in the flexibility to change it later if we want to.
+  G_and_A_prop_total_base <- as.numeric(as.character(inputs$baseP50[which(inputs$type == "General and Administrative")]))/100
+  G_and_A_prop_total_high <- as.numeric(as.character(inputs$highP95[which(inputs$type == "General and Administrative")]))/100
   
-  #dat_cost$G_and_A_prop_of_total <- simulate_bounded_continuous_distribution(P5 = G_and_A_prop_total_low, 
-  #                                                                          P50 = G_and_A_prop_total_base,
-  #                                                                         P95 = G_and_A_prop_total_high, 
-  #                                                                        lower_bound = 0,
-  #                                                                       upper_bound = 1,
-  #                                                                      number_of_simulations = number_of_simulations)
+  dat_cost$G_and_A_prop_of_total <- simulate_bounded_continuous_distribution(P5 = G_and_A_prop_total_low, 
+                                                                            P50 = G_and_A_prop_total_base,
+                                                                           P95 = G_and_A_prop_total_high, 
+                                                                          lower_bound = 0,
+                                                                         upper_bound = 1,
+                                                                        number_of_simulations = number_of_simulations)
   
   # Add the cost inputs together to get a total project cost 
-  dat_cost$G_and_A_prop_of_total<-G_and_A_prop_of_total
+  #dat_cost$G_and_A_prop_of_total<-G_and_A_prop_of_total
   dat_cost$cost_total_project_without_G_and_A <-  dat_cost$cost_CB + dat_cost$cost_RR
   dat_cost$G_and_A <- dat_cost$cost_total_project_without_G_and_A*G_and_A_prop_of_total
   dat_cost$cost_total_project <- dat_cost$cost_total_project_without_G_and_A + dat_cost$G_and_A
@@ -213,14 +223,13 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   fundability_low <- as.numeric(inputs_parameter_prep$lowP5[which(inputs_parameter_prep$subcategory== "Fundability")])
   fundability_base <- as.numeric(inputs_parameter_prep$baseP50[which(inputs_parameter_prep$subcategory== "Fundability")])
   fundability_high <- as.numeric(inputs_parameter_prep$highP95[which(inputs_parameter_prep$subcategory== "Fundability")])
-  
-  if(fundability_low == 0){
+  if(fundability_low == 0 | fundability_low == "NA_real_"){
     fundability_low <- 0.1 # can't have it be 0 as lower bound is 0 so make it 10 cents
-  }
-  if(fundability_base == 0){
+  } 
+  if(fundability_base == 0 | fundability_base == "NA_real_"){
     fundability_base <- 0.1 # same reason as above
   }
-  if(fundability_high == 0){
+  if(fundability_high == 0 | fundability_high == "NA_real_"){
     fundability_high <- 0.1 # same reason as above
   }
   
@@ -254,18 +263,20 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   
   # Benefits
   
-  row_GSGainGplusD <- which(inputs_parameter_prep$subcategory == "GSGainGplusD")
-  benefit_low <- as.numeric(inputs_parameter_prep$lowP5[row_GSGainGplusD])
-  benefit_base <- as.numeric(inputs_parameter_prep$baseP50[row_GSGainGplusD])
-  benefit_high <- as.numeric(inputs_parameter_prep$highP95[row_GSGainGplusD])
-  
-  dat_benefit$GSGainGplusD <- metalogSelectBenefit(P5 = benefit_low,
-                                                                P50 = benefit_base,
-                                                                P95 = benefit_high,
-                                                                number_of_simulations = number_of_simulations)
+  row_GSGainPlusDependence <- which(inputs_parameter_prep$subcategory == "GSGainPlusDependence")
+  benefit_low <- as.numeric(inputs_parameter_prep$lowP5[row_GSGainPlusDependence])
+  benefit_base <- as.numeric(inputs_parameter_prep$baseP50[row_GSGainPlusDependence])
+  benefit_high <- as.numeric(inputs_parameter_prep$highP95[row_GSGainPlusDependence])
+  #added lower/upper bounds
+  dat_benefit$GSGainPlusDependence <- metalogSelectBenefit(P5 = benefit_low,
+                                                          P50 = benefit_base,
+                                                          P95 = benefit_high,
+                                                          lower_bound = max(-100, benefit_low - abs(2*benefit_low-0.0001)),
+                                                          upper_bound = min(100, 2*benefit_high),
+                                                          number_of_simulations = number_of_simulations)
   
   #In rare scenario where benefit < 0, making it 0 
-  dat_benefit$GSGainGplusD[which(dat_benefit$GSGainGplusD <0)] <- 0
+  dat_benefit$GSGainPlusDependence[which(dat_benefit$GSGainPlusDependence <0)] <- 0
   
   # Long-term aspiration
   row_longterm_aspiration <- which(inputs_parameter_prep$subcategory== "GSlongtermAspiration")
@@ -273,10 +284,12 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   longterm_aspiration_base <- as.numeric(inputs_parameter_prep$baseP50[row_longterm_aspiration])
   longterm_aspiration_high <- as.numeric(inputs_parameter_prep$highP95[row_longterm_aspiration])
   
-  
+  #Added lower/upper bounds
   dat_benefit$GSlongtermAspiration <- metalogSelectBenefit(P5 = longterm_aspiration_low,
                                                            P50 = longterm_aspiration_base, 
                                                            P95 = longterm_aspiration_high,
+                                                           lower_bound = max(-100, longterm_aspiration_low - abs(2*longterm_aspiration_low-0.0001)),
+                                                           upper_bound = min( 100, 2*longterm_aspiration_high),
                                                            number_of_simulations = number_of_simulations)
   
   # current - national
@@ -285,23 +298,33 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   current_national_base <- as.numeric(inputs_parameter_prep$baseP50[row_current_national])
   current_national_high <- as.numeric(inputs_parameter_prep$highP95[row_current_national])
   
-  
+  #added lower/upper bounds
   dat_benefit$GScurrentNational <- metalogSelectBenefit(P5 = current_national_low,
-                                                        P50 = current_national_base, 
-                                                        P95 = current_national_high,
-                                                        number_of_simulations = number_of_simulations)
-  
+                                                       P50 = current_national_base, 
+                                                       P95 = current_national_high,
+                                                       lower_bound = 0,
+                                                       upper_bound = min(100, 2*current_national_high),
+                                                       number_of_simulations = number_of_simulations)
+#Testing - in rare scenario where current GS is < 0, setting it to 0 
+ dat_benefit$GScurrentNational[which(dat_benefit$GScurrentNational < 0)] <- 0
+ 
   # current - global
   row_current_global <- which(inputs_parameter_prep$subcategory== "GScurrentGlobal")
   current_global_low <- as.numeric(inputs_parameter_prep$lowP5[row_current_global])
   current_global_base <- as.numeric(inputs_parameter_prep$baseP50[row_current_global])
   current_global_high <- as.numeric(inputs_parameter_prep$highP95[row_current_global])
   
-  
+  #added lower/upper bounds
   dat_benefit$GScurrentGlobal <- metalogSelectBenefit(P5 = current_global_low,
                                                       P50 = current_global_base, 
                                                       P95 = current_global_high,
+                                                      lower_bound = 0,
+                                                      upper_bound = min(100, 2*current_global_high),
                                                       number_of_simulations = number_of_simulations)
+  
+  #Testing - in rare scenario where current GS is < 0, setting it to 0 
+  dat_benefit$GScurrentGlobal[which(dat_benefit$GScurrentGlobal < 0)] <- 0
+  
   
   # Identify how many spatial units were used for the assessment
   dat_benefit$GSnSpatialUnits <- as.numeric(inputs_parameter_prep$baseP50[which(inputs_parameter_prep$subcategory == "GSnSpatialUnits")])
@@ -313,7 +336,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   
   organization_portion_benefit_metalog <- NA # initalize
   
-  
+  #Draw 
   dat_benefit$organization_portion_benefit <- simulate_bounded_continuous_distribution(P5 = pct_benefit_organization_low, 
                                                                                        P50 = pct_benefit_organization_base,
                                                                                        P95 =  pct_benefit_organization_high, 
@@ -343,5 +366,5 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   
   # Return the result
   return(dat)
-}
+}#end of parameter_prep function
 
