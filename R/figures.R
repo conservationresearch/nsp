@@ -25,7 +25,6 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
   results_benefit_national$category <- "National"
   sim_results_summary_benefits <- rbind(results_benefit_national,results_benefit_global)
   
-  ## Need to add in symbol for endemic (done) and conservation breeding (needed?) ##
   # Make the graph
   
   ## Create a data frame to identify species that are endemic

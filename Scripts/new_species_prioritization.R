@@ -35,6 +35,7 @@ functional_score_max <- 10 # 10 if using the fine-scale weights
 ### Specify number of species of interest
 top_species <- 10 #For table of ranked species
 rank_cutoff <- 6 #For sensitivity analysis
+
 ### Specify endemic species, needed for descriptive stats
 endemic_species <- c("Banff Springs Snail","Maritime Ringlet","Atlantic whitefish")
 
@@ -44,8 +45,10 @@ conservation_breeding <-c("Banff Springs Snail", "Woodland Caribou","Boreal Felt
                           "Half Moon Hairstreak", "Oregon Spotted Frog", "Pacific Pond Turtle", 
                           "Spotted Owl (caurina subspecies)", "Taylor's Checkerspot", 
                           "Whitebark pine")
-### Specify epsilon value is using functions 7 or 8 (see below)
+
+### Specify epsilon value if using functions 7 or 8 (see below)
 epsilon <- 0.0375
+
 ### Identify the program names
 org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
 
@@ -111,7 +114,7 @@ p_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_national, r
 p_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs)
 p_BCR <- newSpeciesPrioritization::graph_BCR(results_overall, inputs)
 
-
+# Only use if performing binned analysis
 p_bincgain<-newSpeciesPrioritization::graph_bin_cgains_national
 p_bincurrentgs<-newSpeciesPrioritization::graph_binnedby_currentgs
 

@@ -177,11 +177,8 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                                                upper_bound = 2*cost_RR_total_high,
                                                                number_of_simulations = number_of_simulations)
   
-  
-  
-  ### Need to rename this
-  ### Check with Jana to determine if we actually want this included in the manuscript code or just in our CZ version
-  # Maximum proportion of total external funding allowed
+
+  # Maximum percent of total external funding allowed
   max_pct_total_external_funding_low <- 100 - as.numeric(as.character(inputs$highP95[which(inputs$type == "Mandatory Organization Contribution")]))
   max_pct_total_external_funding_base <- 100 - as.numeric(as.character(inputs$baseP50[which(inputs$type == "Mandatory Organization Contribution")]))
   max_pct_total_external_funding_high <- 100 - as.numeric(as.character(inputs$lowP5[which(inputs$type == "Mandatory Organization Contribution")]))
@@ -195,7 +192,6 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   
   
   
-  #NEED TO FIGURE THIS PART OUT - UNCERTAINITY LIES IN THE % of TOTAL COST THAT WILL BE ADDED ON AS EXTRA. IE. Will need an additional 15% of
   #total cost to go to G&A - so first need to calculate the project cost then take % of that and add it on to get total project cost. 
   #General and Admin costs
   G_and_A_prop_total_low <- as.numeric(as.character(inputs$lowP5[which(inputs$type == "General and Administrative")]))/100 # note, our input here didn't have uncertainty but we built in the flexibility to change it later if we want to.
