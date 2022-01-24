@@ -2,21 +2,24 @@
 % Please edit documentation in R/figures.R
 \name{graph_cost}
 \alias{graph_cost}
-\title{INSERT}
+\title{Figure of costs to organization and financial leverage}
 \usage{
 graph_cost(results_cost_organization, results_cost_total, inputs)
 }
 \arguments{
-\item{results_cost_organization}{TO DO: ADD DESCRIPTION}
+\item{results_cost_organization}{A dataframe produced from the cost benefit analysis that outlines the cost of each program to the organization}
 
-\item{results_cost_total}{TO DO: ADD DESCRIPTION}
+\item{results_cost_total}{A dataframe produced from the cost benefit analysis that outlines the total cost of each program (including to organization and the amount offset by funders)}
 
-\item{inputs}{TO DO: ADD DESCRIPTION}
+\item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
+}
+\value{
+Returns the figure produced
 }
 \description{
-INSERT
+This function creates a figure depicting the costs to the organization and the financial leverage for each conservation program. Programs
+with a current Green Score of zero are presented on a separate facet.
 }
 \examples{
-# STILL TO ADD
-
+graph_cost(results_cost_organization, results_cost_total, inputs)
 }

@@ -2,19 +2,22 @@
 % Please edit documentation in R/figures.R
 \name{scatter_bin_currentgs_national}
 \alias{scatter_bin_currentgs_national}
-\title{INSERT}
+\title{Scatter plot of the national benefits binned by current Green Score}
 \usage{
 scatter_bin_currentgs_national(results_overall, results_benefit_national)
 }
 \arguments{
-\item{results_overall}{TO DO: ADD DESCRIPTION}
+\item{results_overall}{a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program}
 
-\item{results_benefit_national}{TO DO: ADD DESCRIPTION}
+\item{results_benefit_national}{a dataframe produced from the cost benefit analysis that outlines the national benefit each program}
+}
+\value{
+Returns the figure produced
 }
 \description{
-INSERT
+This function can be used when the cost benefit analysis function cba_GplusD_LongTermPot_BinnedByGS is used. This function creates a scatter plot
+of the national benefits of each conservation program, binned by the current Green Score.
 }
 \examples{
-# STILL TO ADD
-
+scatter_bin_currentgs_national(results_overall, results_benefit_national)
 }

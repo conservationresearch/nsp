@@ -2,21 +2,21 @@
 % Please edit documentation in R/figures.R
 \name{graph_BCR}
 \alias{graph_BCR}
-\title{STILL TO CLEAN UP CODE
-INSERT}
+\title{Figure of the benefit-cost ratios}
 \usage{
-graph_BCR(results_overall, inputs)
+graph_BCR(results_BCR_national, results_BCR_global)
 }
 \arguments{
-\item{results_overall}{TO DO: ADD DESCRIPTION}
+\item{results_BCR_national}{a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the national level}
 
-\item{inputs}{TO DO: ADD DESCRIPTION}
+\item{results_BCR_global}{a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the global level}
+}
+\value{
+Returns the figure produced
 }
 \description{
-STILL TO CLEAN UP CODE
-INSERT
+This function produces a bargraph of the national and global benefit-cost ratios calculated in the analysis functions.
 }
 \examples{
-# STILL TO ADD
-
+graph_BCR(results_BCR_national, results_BCR_global)
 }

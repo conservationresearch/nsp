@@ -14,13 +14,13 @@ rm(list = ls())
 
 ### Load libraries
 # library(newSpeciesPrioritization) # uncomment out when done in development mode
-# library(dplyr)
-
+library(dplyr)
+library(ggplot2)
 
 ########## Analysis setup ##########
 
 ### Specify the input csv spreadsheet 
-inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v2.csv")
+inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/input_v2_example_data.csv")
 
 ### Specify number of simulations and set the random seed.
 number_of_simulations <- 10000
@@ -110,32 +110,48 @@ results_ranking<-cbind(results_ranking, common_programs)
 ########## Figures ##########
 
 ### Draw figures from figures function to show the results
-p_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_national, results_benefit_global, inputs)
-p_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs)
-p_BCR <- newSpeciesPrioritization::graph_BCR(results_overall, inputs)
+figure_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_national, results_benefit_global, inputs)
+figure_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs)
+figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_BCR_global)
+figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(results_BCR_national,results_BCR_global, inputs)
+
 
 # Only use if performing binned analysis
-p_bincgain<-newSpeciesPrioritization::graph_bin_cgains_national
-p_bincurrentgs<-newSpeciesPrioritization::graph_binnedby_currentgs
-
+figure_bincgain<-newSpeciesPrioritization::bargraph_binnedby_benefits(results_benefit_national, results_benefit_global, inputs, results_overall)
+figure_bincurrentgs<-newSpeciesPrioritization::bargraph_binnedby_currentgs()
 
 ########## Export tables and figures ##########
 
 # Export panel of figures
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/panel_benefit_cost_BCR.tiff"
-tiff(filename, width=12, height=18, units="in",
-     pointsize=8, compression="lzw", bg="white", res=600,
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/option8_panel_benefit_cost_BCR_uncertaintyv2.tiff"
+tiff(filename, width=10, height=18, units="in",
+     pointsize=14, compression="lzw", bg="white", res=900,
      restoreConsole=TRUE)
-gridExtra::grid.arrange(p_benefit, p_cost, p_BCR, ncol = 1, nrow = 3)
+gridExtra::grid.arrange(figure_benefit, figure_cost, figure_BCR, figure_BCR_uncertainty, ncol = 1, nrow = 4)
+dev.off()
+
+#Doing fig 1 A+B, and fig 2 A+B to get them sized appropriately
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/option8_panel_benefit_costv2.tiff"
+tiff(filename, width=12, height=18, units="in",
+     pointsize=14, compression="lzw", bg="white", res=600,
+     restoreConsole=TRUE)
+gridExtra::grid.arrange(figure_benefit, figure_cost, ncol=1, nrow=2)
+dev.off()
+
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/option8_panel_BCR_Uncertaintyv2.tiff"
+tiff(filename, width=12, height=18, units="in",
+     pointsize=14, compression="lzw", bg="white", res=600,
+     restoreConsole=TRUE)
+gridExtra::grid.arrange(figure_BCR, figure_BCR_uncertainty, ncol=1, nrow=2)
 dev.off()
 
 # Export table of ranks
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Oct 28/overall_results.csv"
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/overall_results.csv"
 write.csv(results_overall, filename, row.names = FALSE)
 
 # Export a table of the ranking results
 
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Oct 28/top_10_ranked.csv"
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/top_10_ranked.csv"
 write.csv(results_ranking, filename, row.names = FALSE)
 
 
@@ -251,9 +267,6 @@ descriptive_stats$Value[which(descriptive_stats$Stat=="Highest Total Cost")]<-co
 descriptive_stats$Program[which(descriptive_stats$Stat=="Highest Total Cost")]<-cost_total_max_program
 descriptive_stats$Value[which(descriptive_stats$Stat=="Lowest Total Cost")]<-cost_total_min
 descriptive_stats$Program[which(descriptive_stats$Stat=="Lowest Total Cost")]<-cost_total_min_program
-#Add in once finished
-descriptive_stats$value[which(descriptive_stats$Stat=="Highest Benefit in Endemic Species")]<-benefit_endemic_national
-descriptive_stats$Program[which(descriptive_stats$Stat=="Highest Benefit in Endemic Species")]<-benefit_endemic_national_program
 
 
 filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Oct 28/descriptive_stats.csv"

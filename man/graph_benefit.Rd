@@ -2,21 +2,23 @@
 % Please edit documentation in R/figures.R
 \name{graph_benefit}
 \alias{graph_benefit}
-\title{INSERT}
+\title{Figure of national and global benefits}
 \usage{
 graph_benefit(results_benefit_national, results_benefit_global, inputs)
 }
 \arguments{
-\item{results_benefit_national}{TO DO: ADD DESCRIPTION}
+\item{results_benefit_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
 
-\item{results_benefit_global}{TO DO: ADD DESCRIPTION}
+\item{results_benefit_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
 
-\item{inputs}{TO DO: ADD DESCRIPTION}
+\item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
+}
+\value{
+Returns the figure produced
 }
 \description{
-INSERT
+This function creates a bar graph of the national and global benefits with programs that have a current Green Score of zero on a separate facet.
 }
 \examples{
-# STILL TO ADD
-
+graph_benefit(results_benefit_national, results_benefit_global, inputs)
 }

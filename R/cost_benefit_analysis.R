@@ -1,31 +1,27 @@
 #This file contains the main cost-benefit functions 
 #Dylan Cole
 #September 2021
-#Incorporated code written by Laura Keating (July 2021) 
-
-
+#Incorporated code written by Laura Keating (July 2021)
 
 #####Cost Benefit Analysis #####
 
 #### Benefit Options #####
 #Users are able to select different metrics to examine the cost/benefit effectiveness
 
-
-
 ######## Analysis for calculating cost benefit ratios based only on simple conservation gains ########
-#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+#' Simple cost benefit analysis
 #' 
+#' This function performs the simplest cost benefit analysis where the benefits are quantified only by Conservation Gain plus Conservation Dependence. 
 #' 
-#' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
-#' @param functional_score_max the maximum possible score for a spatial unit
-#' @return returns last output of function
+#' @param org_programs A vector of the conservation program names
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' # STILL TO ADD
-#'
+#' # cba_GplusD(org_programs,inputs,functional_score_max)
 #' @export
-# Still needs unit testing
-cba_cgain<-function(org_programs, inputs, functional_score_max){
+
+cba_GplusD<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -67,7 +63,7 @@ cba_cgain<-function(org_programs, inputs, functional_score_max){
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    print(paste("Running cgain simulation for", org_program))
+    print(paste("Running cba_GplusD simulation for", org_program))
     
     # Do parameter prep from the input distributions to get one set of parameters
     # to use for each iteration
@@ -100,10 +96,10 @@ cba_cgain<-function(org_programs, inputs, functional_score_max){
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Relabelling for consistency
-    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD
+    dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -113,8 +109,24 @@ cba_cgain<-function(org_programs, inputs, functional_score_max){
     dat$benefit_global_org <- dat$GS_Benefit_global * dat$organization_portion_benefit
     
     ######## Calculate the costs ########
+    
     # Note: this is currently done as prework in the paramater draws function
     # But might be clearer if pull it out and put here
+    # Calculate the maximum amount of external funding that our
+    # organization will accept (i.e. multiply the maximum funding proportion
+    # of total cost with the total project cost).
+    
+    dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+    
+    # Take the minimum of the fundability and the maximum amount of external
+    # funding. The resulting vector is the external funding amounts.
+    
+    dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+    
+    # Calculate the organization project cost as the total project cost minus
+    # external funding.
+    
+    dat$cost_organization <- dat$cost_total_project - dat$external_funding
     
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
@@ -187,23 +199,24 @@ cba_cgain<-function(org_programs, inputs, functional_score_max){
               results_BCR_global,
               dat_list))
   
-} #End of cba_cgain function
+} #End of cba_GplusD function
 
 
-######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations
-#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term potential #########
+#' Cost benefit analysis with long term potential
 #' 
+#' This function performs the cost benefit analysis where benefits, calculated as Conservation Gains plus Conservation Dependence, are relative to
+#' long-term potential Green Score metric.
 #' 
-#' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
-#' @param functional_score_max the maximum possible score for a spatial unit
-#' @return returns last output of function
+#' @param org_programs A vector of the conservation program names
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' # STILL TO ADD
-#'
+#' # cba_GplusD_LongTermPot(org_programs,inputs,functional_score_max)
 #' @export
-# Still needs unit testing
-cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, sensitivity){ 
+
+cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max){ 
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -243,7 +256,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    print(paste("Running cgain_longtermasp simulation for", org_program))
+    print(paste("Running cba_GplusD_LongTermPot simulation for", org_program))
     
     # Do parameter prep from the input distributions to get one set of parameters
     # to use for each iteration
@@ -256,7 +269,7 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermPotential * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -276,10 +289,10 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
-    # Rescaling to long term aspirations
-    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD / dat$GSlongtermAspiration * 100
+    # Rescaling to long term potential
+    dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence / dat$GSlongtermPotential * 100
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -288,10 +301,25 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
     
     dat$benefit_global_org <- dat$GS_Benefit_global * dat$organization_portion_benefit
     
-    
     ######## Calculate the costs ########
+    
     # Note: this is currently done as prework in the paramater draws function
     # But might be clearer if pull it out and put here
+    # Calculate the maximum amount of external funding that our
+    # organization will accept (i.e. multiply the maximum funding proportion
+    # of total cost with the total project cost).
+    
+    dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+    
+    # Take the minimum of the fundability and the maximum amount of external
+    # funding. The resulting vector is the external funding amounts.
+    
+    dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+    
+    # Calculate the organization project cost as the total project cost minus
+    # external funding.
+    
+    dat$cost_organization <- dat$cost_total_project - dat$external_funding
     
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
@@ -363,23 +391,24 @@ cba_cgain_longtermasp <- function(org_programs, inputs, functional_score_max, se
               results_BCR_national,
               results_BCR_global,
               dat_list)) 
-} # End of cba_cgain_longtermasp function simulation
+} # End of cba_GplusD_LongTermPot function
 
 
 ######## Analysis for calculating cost benefit ratios based only on conservation gains binned into high, medium, low, zero gains ########
-#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
-#' 
-#' 
-#' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
-#' @param functional_score_max the maximum possible score for a spatial unit
-#' @return returns last output of function
-#' @examples
-#' # STILL TO ADD
+#' Simple cost benefit analysis with binning based on benefits
 #'
+#' This function performs the cost benefit analysis and bins the results prior to ranking the cost-benefit ratios, giving priority to those programs
+#' with the largest benefit, calculated as Conservation Gains plus Conservation Dependence, regardless of the program cost. 
+#' 
+#' @param org_programs A vector of the conservation program names
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns a list of dataframes containing all the different results
+#' @examples
+#' # cba_GplusD_BinnedByBenefit(org_programs,inputs,functional_score_max)
 #' @export
-# Still needs unit testing
-cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max){
+
+cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 9))
@@ -420,7 +449,7 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max){
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    print(paste("Running cgain_binnedbycgain simulation for", org_program))
+    print(paste("Running cba_GplusD_BinnedByBenefit simulation for", org_program))
     
     # Do parameter prep from the input distributions to get one set of parameters
     # to use for each iteration
@@ -453,10 +482,10 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max){
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Relabelling for consistency
-    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD
+    dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -466,8 +495,24 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max){
     dat$benefit_global_org <- dat$GS_Benefit_global * dat$organization_portion_benefit
     
     ######## Calculate the costs ########
+    
     # Note: this is currently done as prework in the paramater draws function
     # But might be clearer if pull it out and put here
+    # Calculate the maximum amount of external funding that our
+    # organization will accept (i.e. multiply the maximum funding proportion
+    # of total cost with the total project cost).
+    
+    dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+    
+    # Take the minimum of the fundability and the maximum amount of external
+    # funding. The resulting vector is the external funding amounts.
+    
+    dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+    
+    # Calculate the organization project cost as the total project cost minus
+    # external funding.
+    
+    dat$cost_organization <- dat$cost_total_project - dat$external_funding
     
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
@@ -596,23 +641,26 @@ cba_cgain_binnedbycgain <- function(org_programs, inputs, functional_score_max){
               results_BCR_national,
               results_BCR_global,
               dat_list)) 
-} # End of cba_cgain_binnedbycgain
+} # End of cba_GplusD_BinnedByBenefit function
 
 
-######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations binned by current GS ########
-#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term potential binned by current GS ########
+#' Cost benefit analysis with benefits relative to long-term potential, binned by current Green Score status
 #' 
+#' This function performs the cost benefit analysis with the benefits, calculated as the Conservation Gain plus Conservation Dependence, relative to
+#' long-term potential of each species. Prior to ranking programs, this function bins conservation programs into groups depending on the species
+#' current Green Score. Species with a lower current Green Score are giving priority and will therefore rank higher, even if the cost benefit ratio
+#' is comparatively lower. 
 #' 
-#' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
-#' @param functional_score_max the maximum possible score for a spatial unit
-#' @return returns last output of function
+#' @param org_programs A vector of the conservation program names
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs  
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' # STILL TO ADD
-#'
+#' cba_GplusD_LongTermPot_BinnedByGS(org_programs, inputs, functional_score_max)
 #' @export
-# Still needs unit testing
-cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_score_max){
+
+cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -656,7 +704,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    print(paste("Running cgain_longtermasp_binnedbyGS simulation for", org_program))
+    print(paste("Running cba_GplusD_LongTermPot_BinnedByGS simulation for", org_program))
     
     # Do parameter prep from the input distributions to get one set of parameters
     # to use for each iteration
@@ -669,7 +717,7 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermAspiration * 100
+    dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermPotential * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit
     
@@ -689,10 +737,10 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
-    # Rescaling to long term aspirations
-    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD / dat$GSlongtermAspiration * 100
+    # Rescaling to long term potential
+    dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence / dat$GSlongtermPotential * 100
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -703,8 +751,24 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
     
     
     ######## Calculate the costs ########
+    
     # Note: this is currently done as prework in the paramater draws function
     # But might be clearer if pull it out and put here
+    # Calculate the maximum amount of external funding that our
+    # organization will accept (i.e. multiply the maximum funding proportion
+    # of total cost with the total project cost).
+    
+    dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+    
+    # Take the minimum of the fundability and the maximum amount of external
+    # funding. The resulting vector is the external funding amounts.
+    
+    dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+    
+    # Calculate the organization project cost as the total project cost minus
+    # external funding.
+    
+    dat$cost_organization <- dat$cost_total_project - dat$external_funding
     
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
@@ -836,23 +900,23 @@ cba_cgain_longtermasp_binnedbyGS<-function(org_programs, inputs, functional_scor
               results_BCR_national,
               results_BCR_global,
               dat_list)) 
-} # End of cba_cgain_longtermasp_binnedbyGS function simulation
+} # End of cba_GplusD_LongTermPot_BinnedByGS function
 
 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS for extant species only ########
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to current GS for extant species only ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
 #' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
-#' @param functional_score_max The maximum possible score for a spatial unit
+#' @param inputs a CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param functional_score_max the maximum possible score for a spatial unit
 #' @return Returns last output of function
 #' @examples
 #' # STILL TO ADD
 #'
 #' @export
 # Still needs unit testing
-cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
+cba_GplusD_CurrentGS<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -895,7 +959,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
     if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0)
-    {print(paste(org_program, "is extirpated. Cannot divide by Current GS of 0, therefore dividing by 0.001"))}
+    {print(paste(org_program, "is extirpated. Cannot divide by Current GS of 0, therefore dividing by epsilon value"))}
     else {print(paste("Running cba_cgain_currentGS simulation for", org_program))}
 
       # Do parameter prep from the input distributions to get one set of parameters
@@ -910,7 +974,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
       if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
           && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
           && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0){
-        dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / 0.001
+        dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / epsilon
       } else {
       dat$benefit_national_org <-  dat$GS_Benefit_national * dat$organization_portion_benefit / dat$GScurrentNational
       }
@@ -930,10 +994,10 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
       GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
       
       # Calculate new value for scaled global
-      dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+      dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
       
       # Relabel for consistency
-      dat$GS_Benefit_global <- dat$GSGlobalGainGplusD 
+      dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence 
       
       # Adjust the global benefit of the organization's program to reflect the organization portion by
       # multiplying the organizations global benefit vector by the vector with the percent
@@ -942,13 +1006,30 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
       if (inputs$highP95[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
           && inputs$baseP50[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
           && inputs$lowP5[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0){
-        dat$benefit_global_org <-  (dat$GS_Benefit_global * dat$organization_portion_benefit ) / 0.001
+        dat$benefit_global_org <-  (dat$GS_Benefit_global * dat$organization_portion_benefit ) / epsilon
       } else {
       dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / dat$GScurrentGlobal
       }
+      
       ######## Calculate the costs ########
+      
       # Note: this is currently done as prework in the paramater draws function
       # But might be clearer if pull it out and put here
+      # Calculate the maximum amount of external funding that our
+      # organization will accept (i.e. multiply the maximum funding proportion
+      # of total cost with the total project cost).
+      
+      dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+      
+      # Take the minimum of the fundability and the maximum amount of external
+      # funding. The resulting vector is the external funding amounts.
+      
+      dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+      
+      # Calculate the organization project cost as the total project cost minus
+      # external funding.
+      
+      dat$cost_organization <- dat$cost_total_project - dat$external_funding
       
       ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
       
@@ -969,7 +1050,7 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
       results_BCR_national[which(results_BCR_national$org_program == org_program), "P95"] <- quantile(dat$BCR_national, 0.95)
       
       results_overall[which(results_BCR_national$org_program == org_program), "BCR_national_EV"] <- mean(dat$BCR_national)
-      
+
       # Global
       
       results_BCR_global[which(results_BCR_global$org_program == org_program), "mean"] <- mean(dat$BCR_global)
@@ -1024,12 +1105,12 @@ cba_cgain_currentGS<-function(org_programs, inputs, functional_score_max){
 } #End cba_cgain_currentGS function simulation
 
 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS for extant species only  ########
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term potential gains relative to current GS for extant species only  ########
 #' This function performs the cost benefit analysis for an organizations new species prioritization process. 
 #' 
 #' 
 #' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
+#' @param inputs a CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param functional_score_max the maximum possible score for a spatial unit
 #' @return returns last output of function
 #' @examples
@@ -1081,7 +1162,7 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
     if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0)
-    {print(paste(org_program, "is extirpated. Cannot divide by Current GS of 0, therefore dividing by 0.001"))}
+    {print(paste(org_program, "is extirpated. Cannot divide by Current GS of 0, therefore dividing by epsilon value"))}
     else {print(paste("Running cba_cgain_longtermasp_currentGS simulation for", org_program))}
     
     # Do parameter prep from the input distributions to get one set of parameters
@@ -1095,11 +1176,11 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermAspiration) * 100
+    dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermPotential) * 100
     if (inputs$highP95[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$baseP50[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0
         && inputs$lowP5[which(inputs$subcategory=="GScurrentNational" & inputs$species==org_program)] == 0){
-      dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / 0.001
+      dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / epsilon
     } else {
       dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / dat$GScurrentNational}
     
@@ -1119,10 +1200,10 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
-    # Rescaling to long term aspirations and current global GS 
-    dat$GS_Benefit_global <- (dat$GSGlobalGainGplusD / dat$GSlongtermAspiration) * 100 
+    # Rescaling to long term potential and current global GS 
+    dat$GS_Benefit_global <- (dat$GSGlobalGainPlusDependence / dat$GSlongtermPotential) * 100 
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -1131,7 +1212,7 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
     if (inputs$highP95[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
         && inputs$baseP50[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0
         && inputs$lowP5[which(inputs$subcategory=="GScurrentGlobal" & inputs$species==org_program)] == 0){
-      dat$benefit_global_org <-  (dat$GS_Benefit_global * dat$organization_portion_benefit ) / 0.001
+      dat$benefit_global_org <-  (dat$GS_Benefit_global * dat$organization_portion_benefit ) / epsilon
     } else {
       dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / dat$GScurrentGlobal
     }
@@ -1140,8 +1221,24 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
       
       
       ######## Calculate the costs ########
+      
       # Note: this is currently done as prework in the paramater draws function
       # But might be clearer if pull it out and put here
+      # Calculate the maximum amount of external funding that our
+      # organization will accept (i.e. multiply the maximum funding proportion
+      # of total cost with the total project cost).
+      
+      dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+      
+      # Take the minimum of the fundability and the maximum amount of external
+      # funding. The resulting vector is the external funding amounts.
+      
+      dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+      
+      # Calculate the organization project cost as the total project cost minus
+      # external funding.
+      
+      dat$cost_organization <- dat$cost_total_project - dat$external_funding
       
       ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
       
@@ -1216,26 +1313,28 @@ cba_cgain_longtermasp_currentGS<-function(org_programs, inputs, functional_score
 } # End of cba_cgain_longtermasp_currentGS function simulation
 
 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to current GS plus arbitrary epsilon ########
-#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to current GS plus subjective epsilon ########
+#' Cost benefit analysis with benefits relative to current Green Status score plus epsilon
 #' 
+#' This function performs the cost benefit analysis using an advanced method wherein the benefits, calculated as Conservation Gain plus Conservation 
+#' Dependence, are calculated relative to the current Green Score of the species while also incorporating epsilon. Epsilon is subjective value that is
+#' added to the current Green Score in order to accommodate species that have a current Green Score of zero.
 #' 
-#' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95) 
-#' @param functional_score_max the maximum possible score for a spatial unit
-#' @return returns last output of function
+#' @param org_programs A vector of the conservation program names
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs 
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' # STILL TO ADD
-#'
+#' cba_GplusD_CurrentGS_epsilon(org_programs, inputs, functional_score_max)
 #' @export
-# Still needs unit testing
-cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max){
+
+cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
-                                 "BCR_global_EV","BCR_global_EV_rank" 
-                                 )
+                                 "BCR_global_EV","BCR_global_EV_rank")
   results_overall$org_program <- org_programs 
   
   # Summary object for national BCR results
@@ -1269,7 +1368,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    print(paste("Running cgains_currentGS_epsilon simulation for", org_program))
+    print(paste("Running cba_GplusD_CurrentGS_epsilon simulation for", org_program))
     
     # Do parameter prep from the input distributions to get one set of parameters
     # to use for each iteration
@@ -1282,7 +1381,7 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate organization portion of the benefit
     
-    # Adding 0.1 to account for extirpated species 
+    # Adding epsilon to account for extirpated species 
     dat$GS_Benefit_national <- dat$GSGainPlusDependence 
     
     dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit ) / (dat$GScurrentNational + epsilon)
@@ -1303,10 +1402,10 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
     # Calcuate global benefit relative to current global GS (adding 0.1 for extirpated species)
-    dat$GS_Benefit_global <- dat$GSGlobalGainGplusD / (dat$GScurrentGlobal + epsilon)
+    dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence / (dat$GScurrentGlobal + epsilon)
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -1317,22 +1416,24 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
     
     ######## Calculate the costs ########
     
+    # Note: this is currently done as prework in the paramater draws function
+    # But might be clearer if pull it out and put here
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
     
-    dat_cost$max_external_funding <- dat_cost$max_prop_total_external_funding*dat_cost$cost_total_project
+    dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
     
     # Take the minimum of the fundability and the maximum amount of external
     # funding. The resulting vector is the external funding amounts.
     
-    dat_cost$external_funding <- pmin(dat_cost$max_external_funding, dat_cost$fundability)
+    dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
     
     # Calculate the organization project cost as the total project cost minus
     # external funding.
     
-    dat_cost$cost_organization <- dat_cost$cost_total_project - dat_cost$external_funding
-
+    dat$cost_organization <- dat$cost_total_project - dat$external_funding
+    
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
     # Divide the organization's national benefit of the program by the
@@ -1403,23 +1504,25 @@ cba_cgain_currentGS_epsilon<-function(org_programs, inputs, functional_score_max
               results_BCR_national,
               results_BCR_global,
               dat_list)) 
-} # End cba_cgain_currentgs_epsilon function simulation
+} # End cba_GplusD_CurrentGS_epsilon function
 
 
-####### Analysis for calculating cost benefit ratios based on conservation gains relative to long term aspirations gains relative to current GS plus arbitrary epsilon ########
-#' This function performs the cost benefit analysis for an organizations new species prioritization process. 
+######## Analysis for calculating cost benefit ratios based on conservation gains relative to long term potential gains relative to current GS plus arbitrary epsilon ########
+#' Cost benefit analysis with benefits relative to both long term potential and current Green Score plus epsilon
 #' 
+#' This function performs the cost benefit analysis using an advanced method wherein the benefits, calculated as Conservation Gain plus Conservation
+#' Dependence, are relative to both the long term potential and current the Green Score of the species while also incorporating epsilon. Epsilon is 
+#' subjective value that is added to the current Green Score in order to accommodate species that have a current Green Score of zero.
 #' 
-#' @param org_programs a vector of the conservation program names
-#' @param inputs a CSV containing the conservation programs and the associated benefits and costs (P5, P50, P95)
-#' @param functional_score_max the maximum possible score for a spatial unit
-#' @return returns last output of function
+#' @param org_programs A vector of the conservation program names
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param functional_score_max The maximum possible score for a spatial unit
+#' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' # STILL TO ADD
-#'
+#' cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs,inputs,functional_score_max)
 #' @export
-# Still needs unit testing
-cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, functional_score_max){
+
+cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max){
   
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -1461,7 +1564,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
   for (i in 1:length(org_programs)) {
     # Identify which program we are doing now
     org_program <- as.character(org_programs[i])
-    print(paste("Running cgain_longtermasp_currentGS_epsilon simulation for", org_program))
+    print(paste("Running cba_GplusD_LongTermPot_CurrentGS_epsilon simulation for", org_program))
     
     # Do parameter prep from the input distributions to get one set of parameters
     # to use for each iteration
@@ -1474,7 +1577,7 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
-    dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermAspiration) * 100
+    dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermPotential) * 100
     
     dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$organization_portion_benefit) / (dat$GScurrentNational + epsilon)
     
@@ -1494,10 +1597,10 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
     
     # Calculate new value for scaled global
-    dat$GSGlobalGainGplusD <- GS_numerator_assessed / GS_denominator_scaled * 100
+    dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
     
-    # Rescaling to long term aspirations and current global GS plus epsilon
-    dat$GS_Benefit_global <- (dat$GSGlobalGainGplusD / dat$GSlongtermAspiration) * 100 
+    # Rescaling to long term potential and current global GS plus epsilon
+    dat$GS_Benefit_global <- (dat$GSGlobalGainPlusDependence / dat$GSlongtermPotential) * 100 
     
     # Adjust the global benefit of the organization's program to reflect the organization portion by
     # multiplying the organizations global benefit vector by the vector with the percent
@@ -1505,9 +1608,26 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
     # the program. Followed by rescaling to currentGS plus epsilon
     
     dat$benefit_global_org <- (dat$GS_Benefit_global * dat$organization_portion_benefit) / (dat$GScurrentGlobal + epsilon)
-    
-    
 
+    ######## Calculate the costs ########
+    
+    # Note: this is currently done as prework in the paramater draws function
+    # But might be clearer if pull it out and put here
+    # Calculate the maximum amount of external funding that our
+    # organization will accept (i.e. multiply the maximum funding proportion
+    # of total cost with the total project cost).
+    
+    dat$max_external_funding <- dat$max_prop_total_external_funding*dat$cost_total_project
+    
+    # Take the minimum of the fundability and the maximum amount of external
+    # funding. The resulting vector is the external funding amounts.
+    
+    dat$external_funding <- pmin(dat$max_external_funding, dat$fundability)
+    
+    # Calculate the organization project cost as the total project cost minus
+    # external funding.
+    
+    dat$cost_organization <- dat$cost_total_project - dat$external_funding
     
     ######## Calculate the Benefit to Cost Ratios (BCRs) for each iteration ########
     
@@ -1579,5 +1699,5 @@ cba_cgain_longtermasp_currentGS_epsilon<-function(org_programs, inputs, function
               results_BCR_national,
               results_BCR_global,
               dat_list)) 
-} # End of cba_cgain_longtermasp_currentGS_epsilon function simulation
+} # End of cba_GplusD_LongTermPot_CurrentGS_epsilon function
 

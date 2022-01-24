@@ -1,18 +1,30 @@
 Package: newSpeciesPrioritization
-Title: What the Package Does (One Line, Title Case)
+Title: New Species Prioritization using IUCN Green Status Scores
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Laura",
+    c(person(given = "Laura",
            family = "Keating",
            role = "author",
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "LauraK@calgaryzoo.com"))
+	person(given = "Dylan",
+		family = "Cole",
+		role = "author",
+		email = "DylanC@calgaryzoo.com"))
+Description: "This package performs a cost-benefit analysis of potential conservation projects to identify the 
+	projects. The benefits in this package are Green Score metrics produced throuhg expert elicitation while
+	the costs are the finincial costs of the projects and their potential for funding. The analysis requires 
+	an input csv file containing the P5, P50, and P95 quantiles of the Green Score metrics and the project 
+	costs for each potential project. Metalog distribution functions use these input quantiles to generate 
+	values used in the analysis. Analysis options are provided to allow users to best incoporate their values
+	into how they prioritize projects."
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 URL: https://github.com/conservationresearch-laurakeating/newSpeciesPrioritization
 BugReports: https://github.com/conservationresearch-laurakeating/newSpeciesPrioritization/issues
+Imports: 
+    dplyr,
+    ggplot2

@@ -2,19 +2,17 @@
 % Please edit documentation in R/sensitivity_analysis.R
 \name{draw_tornados_global}
 \alias{draw_tornados_global}
-\title{STILL TO CLEAN UP CODE
-INSERT}
+\title{Draws the tornado plots from the sensitivity analysis}
 \usage{
 draw_tornados_global(inputs_sens)
 }
 \arguments{
-\item{inputs_sens}{TO DO: ADD DESCRIPTION}
+\item{inputs_sens}{A dataframe generated from the sensitivity function}
 }
 \description{
-STILL TO CLEAN UP CODE
-INSERT
+This function takes the output from the sensitivity analysis and creates tornado plots of the recalculated results at the global level,
+highlighting the effects that altering each parameter would have on the ranking of the programs.
 }
 \examples{
-# STILL TO ADD
-
+draw_tornados_global(inputs_sens)
 }
