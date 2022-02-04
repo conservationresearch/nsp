@@ -4,21 +4,21 @@ Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Laura",
            family = "Keating",
-           role = "author",
-           email = "LauraK@calgaryzoo.com"))
+           role = c("aut", "cre"),
+           email = "LauraK@calgaryzoo.com"),
 	person(given = "Dylan",
 		family = "Cole",
-		role = "author",
+		role = "aut",
 		email = "DylanC@calgaryzoo.com"))
-Description: "This package performs a cost-benefit analysis of potential conservation projects to identify the 
-	projects. The benefits in this package are Green Score metrics produced throuhg expert elicitation while
+Description: "This package performs a cost-benefit analysis of potential conservation projects.
+	The benefits in this package are measured as Green Status metrics and scores while
 	the costs are the finincial costs of the projects and their potential for funding. The analysis requires 
-	an input csv file containing the P5, P50, and P95 quantiles of the Green Score metrics and the project 
-	costs for each potential project. Metalog distribution functions use these input quantiles to generate 
-	values used in the analysis. Analysis options are provided to allow users to best incoporate their values
+	an input csv file containing expert elicited P5, P50, and P95 quantiles of the Green Score metrics and the project 
+	costs for each potential project (See example dataset to see exact formatting). A Metalog distribution is then produced from 
+	these input quantiles and using a Monte Carlo simulation, values are selected from this distribution to be used in the analysis. 
+	Analysis options are provided to allow users and organizations to best incoporate their values when quantifying benefit. 
 	into how they prioritize projects."
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -26,5 +26,6 @@ RoxygenNote: 7.1.2
 URL: https://github.com/conservationresearch-laurakeating/newSpeciesPrioritization
 BugReports: https://github.com/conservationresearch-laurakeating/newSpeciesPrioritization/issues
 Imports: 
-    dplyr,
-    ggplot2
+    dplyr, ggplot2, rmetalog, data.table
+Depends: 
+    R (>= 2.10)

@@ -1,5 +1,5 @@
 # This code runs a cost benefit analysis to prioritize new potential species for
-# an organization's Conservation Research Conservation Translocation program.
+# an organization's Conservation Translocation program.
 
 # Laura Keating and Alyssa Friesen
 # Last update: July 27, 2021
@@ -16,18 +16,17 @@ rm(list = ls())
 # library(newSpeciesPrioritization) # uncomment out when done in development mode
 library(dplyr)
 library(ggplot2)
+library(rmetalog)
+library(data.table)
 
 ########## Analysis setup ##########
 
 ### Specify the input csv spreadsheet 
-inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/input_v2_example_data.csv")
+inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v2.csv")
 
 ### Specify number of simulations and set the random seed.
 number_of_simulations <- 10000
 set.seed(123) # to ensure the same set of random numbers each time
-
-### Specify project G&A proportion (general and admin cost)
-G_and_A_prop_of_total <- 0.15
 
 ### Specify what the max score is for functional
 functional_score_max <- 10 # 10 if using the fine-scale weights
@@ -57,16 +56,16 @@ org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
 ### Run the simulation using cost_benefit function
 
 #IMPORTANT - User specifies which function to run
-  # 1) cba_cgain
-  # 2) cba_cgain_longtermasp
-  # 3) cba_cgain_binnedbycgain
-  # 4) cba_cgain_longtermasp_binnedbyGS
-  # 5) cba_cgain_currentGS
+  # 1) cba_GplusD
+  # 2) cba_GplusD_LongTermPot
+  # 3) cba_GplusD_BinnedByBenefit
+  # 4) cba_GplusD_LongTermPot_BinnedByGS
+  # 5) cba_GplusD_CurrentGS
   # 6) cba_cgain_longtermasp_currentGS
-  # 7) cba_cgain_currentGS_epsilon
-  # 8) cba_cgain_longtermasp_currentGS_epsilon
+  # 7) cba_GplusD_CurrentGS_epsilon
+  # 8) cba_GplusD_LongTermPot_CurrentGS_epsilon
 
-results_full_analysis <-  newSpeciesPrioritization::cba_cgain_longtermasp_currentGS_epsilon(org_programs = org_programs, 
+results_full_analysis <-  newSpeciesPrioritization::cba_GplusD(org_programs = org_programs, 
                                                  inputs = inputs,
                                                  functional_score_max = functional_score_max)
                                         
@@ -150,7 +149,6 @@ filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents
 write.csv(results_overall, filename, row.names = FALSE)
 
 # Export a table of the ranking results
-
 filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/top_10_ranked.csv"
 write.csv(results_ranking, filename, row.names = FALSE)
 
