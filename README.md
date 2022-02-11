@@ -25,3 +25,5 @@ Dependence, relative to Current Green Score plus Epsilon. Option 6 quantifies th
 Long Term Aspiration, and relative to the Current Green Score plus Epsilon. Epsilon is a subjective term that is added to deal with Species that have a Current
 Green Score of zero (extirpated), thus avoiding dividing by zero. 
 
+To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation,
+and sensitivty analysis. 
