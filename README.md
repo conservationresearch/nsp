@@ -4,8 +4,8 @@ New Species Prioritization
 This package was developed by the Wilder Institute/Calgary Zoo as a method to rank and prioritize new conservation translocation projects through a
 structured decision making process combined with a cost benefit analysis. This package is designed to perform the latter. Prior to using this package,
 a user must prepare a list of candidate projects (or species of interest). For each project, the user must also calculate Green Status scores and the four
-associated metrics and the potential costs for each project. Due to the inherent uncertainty in both quantifying species status' currently, and particularly
-into the future, users must calculate the worst case (P5), best guess (P50), best case (P95) scenarios for each score, metric, and cost. Furthermore, because
+associated metrics and the potential costs for each project. Due to the inherent uncertainty in both quantifying species status and project costs, users must 
+calculate the worst case (P5), best guess (P50), best case (P95) scenarios for each score, metric, and cost. Furthermore, because
 the Wilder Institute/Calgary Zoo was interested in results at both the national and global scale, this package is able to extend the national benefits and
 costs and extend these to a global scale. Therefore, users must also supply a low and high range of their global distribution attributed to the country of 
 interest, and the probabilities of those ranges (probabilities must add to 100). A user must also supply the P5, P50, and P95 for two additional metrics not 
@@ -24,3 +24,6 @@ Current Green Score. Projects that have a lower Current Green Score are given pr
 Dependence, relative to Current Green Score plus Epsilon. Option 6 quantifies the benefit as the Conservation Gain Plus Conservation Dependence, relative to 
 Long Term Aspiration, and relative to the Current Green Score plus Epsilon. Epsilon is a subjective term that is added to deal with Species that have a Current
 Green Score of zero (extirpated), thus avoiding dividing by zero. 
+
+To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation,
+and sensitivty analysis. 
