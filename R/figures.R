@@ -29,7 +29,7 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
   results_benefit_global$org_program <- as.character(results_benefit_global$org_program) 
   # order by decreasing national benefit
   sim_results_summary_benefits$org_program <- factor(sim_results_summary_benefits$org_program, 
-                                                     levels=unique(results_benefit_national$org_program[order(-sim_results_summary_benefits$P50, decreasing = TRUE)]), ordered=TRUE)
+                                                     levels=unique(results_benefit_national$org_program[order(-sim_results_summary_benefits$mean, decreasing = TRUE)]), ordered=TRUE)
   
   # Identify extirpated or extinct in the wild species
   species_extirpated_national <- inputs$species[which(inputs$subcategory=="GScurrentNational" & inputs$baseP50==0)]
@@ -159,7 +159,7 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   costs_graph2 <- ggplot2::ggplot(sim_results_summary_costs, ggplot2::aes(x = mean/1000, y = org_program, alpha = Category)) +
     ggplot2::geom_bar(stat="identity",position ="identity") +
     ggplot2::facet_wrap(~ extirpated_or_extinct, ncol=1, nrow=2, scales="free") + 
-    ggplot2::scale_alpha_manual(values=c(1, .3)) +
+    ggplot2::scale_alpha_manual(values=c(0.3, 1)) +
     ggplot2::geom_errorbar(ggplot2::aes(xmin=P5/1000, xmax=P95/1000), width=.1, color = "black") +
     ggplot2::scale_fill_manual(values=c("gray30", "gray70")) +
     ggplot2::labs(x = "Mean cost over 10 years (CAD thousands)",
