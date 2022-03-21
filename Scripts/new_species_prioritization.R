@@ -13,16 +13,20 @@
 rm(list = ls())
 
 ### Load libraries
-# library(newSpeciesPrioritization) # uncomment out when done in development mode
+library(newSpeciesPrioritization) # uncomment out when done in development mode
 library(dplyr)
 library(ggplot2)
+library(ggrepel)
 library(rmetalog)
 library(data.table)
 
 ########## Analysis setup ##########
 
 ### Specify the input csv spreadsheet 
-inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v2.csv")
+inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v4.csv")
+#And adjust when necessary
+inputs$species<-gsub(" (caurina subspecies)","", inputs$species, fixed=TRUE)
+inputs$name<-gsub(" (caurina subspecies)_","_", inputs$name, fixed=TRUE)
 
 ### Specify number of simulations and set the random seed.
 number_of_simulations <- 10000
@@ -42,7 +46,7 @@ endemic_species <- c("Banff Springs Snail","Maritime Ringlet","Atlantic whitefis
 conservation_breeding <-c("Banff Springs Snail", "Woodland Caribou","Boreal Felt Lichen", 
                           "Contorted-pod Evening-Primrose", "Dakota Skipper", "Dense-flowered Lupine",
                           "Half Moon Hairstreak", "Oregon Spotted Frog", "Pacific Pond Turtle", 
-                          "Spotted Owl (caurina subspecies)", "Taylor's Checkerspot", 
+                          "Spotted Owl", "Taylor's Checkerspot", 
                           "Whitebark pine")
 
 ### Specify epsilon value if using functions 7 or 8 (see below)
@@ -60,12 +64,10 @@ org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
   # 2) cba_GplusD_LongTermPot
   # 3) cba_GplusD_BinnedByBenefit
   # 4) cba_GplusD_LongTermPot_BinnedByGS
-  # 5) cba_GplusD_CurrentGS
-  # 6) cba_cgain_longtermasp_currentGS
-  # 7) cba_GplusD_CurrentGS_epsilon
-  # 8) cba_GplusD_LongTermPot_CurrentGS_epsilon
+  # 5) cba_GplusD_CurrentGS_epsilon
+  # 6) cba_GplusD_LongTermPot_CurrentGS_epsilon
 
-results_full_analysis <-  newSpeciesPrioritization::cba_GplusD(org_programs = org_programs, 
+results_full_analysis <-  newSpeciesPrioritization::cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs = org_programs, 
                                                  inputs = inputs,
                                                  functional_score_max = functional_score_max)
                                         
@@ -116,17 +118,23 @@ figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(result
 
 
 # Only use if performing binned analysis
-figure_bincgain<-newSpeciesPrioritization::bargraph_binnedby_benefits(results_benefit_national, results_benefit_global, inputs, results_overall)
-figure_bincurrentgs<-newSpeciesPrioritization::bargraph_binnedby_currentgs()
+figure_bincgain<-newSpeciesPrioritization::bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
+figure_bincgain_scatternational<-newSpeciesPrioritization::scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
+figure_bincgain_scatterglobal<-newSpeciesPrioritization::scatter_bin_benefits_global(results_benefit_global, inputs, results_overall)
+
+figure_bincurrentgs<-newSpeciesPrioritization::bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
+figure_bincurrentgs_scatternational<-newSpeciesPrioritization::scatter_bin_currentgs_national(results_overall,results_benefit_national)
+figure_bincurrentgs_scatterglobal<-newSpeciesPrioritization::scatter_bin_currentgs_global(results_overall,results_benefit_global)
+
 
 ########## Export tables and figures ##########
 
 # Export panel of figures
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/option8_panel_benefit_cost_BCR_uncertaintyv2.tiff"
-tiff(filename, width=10, height=18, units="in",
-     pointsize=14, compression="lzw", bg="white", res=900,
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v3/Option6_BCRUncertainty.tiff"
+tiff(filename, width=18, height=10, units="in",
+     pointsize=14, compression="lzw", bg="white",res=1080,
      restoreConsole=TRUE)
-gridExtra::grid.arrange(figure_benefit, figure_cost, figure_BCR, figure_BCR_uncertainty, ncol = 1, nrow = 4)
+gridExtra::grid.arrange(figure_BCR,figure_BCR_uncertainty, ncol = 2, nrow = 1)
 dev.off()
 
 #Doing fig 1 A+B, and fig 2 A+B to get them sized appropriately
@@ -137,12 +145,21 @@ tiff(filename, width=12, height=18, units="in",
 gridExtra::grid.arrange(figure_benefit, figure_cost, ncol=1, nrow=2)
 dev.off()
 
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/option8_panel_BCR_Uncertaintyv2.tiff"
-tiff(filename, width=12, height=18, units="in",
-     pointsize=14, compression="lzw", bg="white", res=600,
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/BCR_Uncertainty_option6.tiff"
+tiff(filename, width=18, height=10, units="in",
+     pointsize=14, compression="lzw", bg="white", res=1080,
      restoreConsole=TRUE)
-gridExtra::grid.arrange(figure_BCR, figure_BCR_uncertainty, ncol=1, nrow=2)
+gridExtra::grid.arrange(BCR_graph_final, BCR_credi_final, ncol=2, nrow=1)
 dev.off()
+
+#Export Option 3 / 4 figures
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v3/Option4_Scatter.tiff"
+tiff(filename, width=18, height=10, units="in",
+     pointsize=14, compression="lzw", bg="white",res=1080,
+     restoreConsole=TRUE)
+gridExtra::grid.arrange(figure_bincurrentgs_scatternational,figure_bincurrentgs_scatterglobal, ncol = 2, nrow = 1)
+dev.off()
+
 
 # Export table of ranks
 filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/overall_results.csv"
@@ -165,10 +182,10 @@ inputs_sens <- newSpeciesPrioritization::sensitivity(org_programs, inputs, resul
 tornado_spSpecific_national_list<-newSpeciesPrioritization::draw_tornados_national(inputs_sens = inputs_sens)
 tornado_spSpecific_global_list<-newSpeciesPrioritization::draw_tornados_global(inputs_sens = inputs_sens)
 
-## Export panel of figures
+## Export figures
 for(i in 1:length(org_programs)){
   species<-org_programs[i]
-  filename <- paste0("C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Oct 28/National Sensitivity/tornado_ranks_top20_national_", species,".tiff", sep="")
+  filename <- paste0("C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v2/TornadoPlots/National/tornado_ranks_top20_national_", species,".tiff", sep="")
   tiff(filename, width=12, height=12, units="in",
        pointsize=8, compression="lzw", bg="white", res=600,
        restoreConsole=TRUE)
@@ -179,7 +196,7 @@ for(i in 1:length(org_programs)){
 
 for(i in 1:length(org_programs)){
   species<-org_programs[i]
-  filename <- paste0("C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Oct 28/Global Sensitivity/tornado_ranks_top20_global_", species,".tiff", sep="")
+  filename <- paste0("C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v2/TornadoPlots/Global/tornado_ranks_top20_global_", species,".tiff", sep="")
   tiff(filename, width=12, height=12, units="in",
        pointsize=8, compression="lzw", bg="white", res=600,
        restoreConsole=TRUE)

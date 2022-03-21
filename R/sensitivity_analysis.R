@@ -44,7 +44,7 @@ sensitivity <- function(org_programs, inputs, results_full_analysis, rank_cutoff
     dat <- results_full_analysis[[8]][[j]]  
     
     # Identify the inputs for this org program as well as the NA inputs
-    relevant_input_rows <- which(inputs$species == org_programs[j]| inputs$species == 'N/A')
+    relevant_input_rows <- which(inputs$species == org_programs[j] | inputs$species == 'N/A')
     n_inputs <- length(relevant_input_rows)
     inputs_int <- inputs[relevant_input_rows,]
 
@@ -55,16 +55,24 @@ sensitivity <- function(org_programs, inputs, results_full_analysis, rank_cutoff
       
       #Collect the data
       row_in_inputs <- which(inputs$name == inputs_int$name[k])
-      col_in_dat <- which(grepl(sub(".*_", "", inputs_int$name[k]),colnames(dat), fixed = TRUE) == TRUE)
+      col_in_dat <- which(grepl(sub(".*_", "", inputs_int$name[k]), colnames(dat), fixed = TRUE) == TRUE)
       
-      # Matching any occurance of "_" and replacing with a "" in pct_range_
+      # Matching specific cases that don't work because of because of greediness of .*_ or different names in input_int vs colnames(dat)
+      if(sub(".*_", "", inputs_int$name[k]) == "OrganizationBenefit"){
+         col_in_dat <- which(colnames(dat) == "OrgBenefit")
+      }
       if(sub(".*_", "", inputs_int$name[k]) == "pctRangeCountry"){
         col_in_dat <- which(colnames(dat) == "species_range_pct_in_nation")
       }
-      
-      if(sub(".*_", "", inputs_int$name[k]) == "score"){
-        col_in_dat <- which(colnames(dat) == "fundability")
+      if(inputs_int$name[k] == "allSp_GandA_pct"){
+        col_in_dat <- which(colnames(dat) == "G_and_A_prop_of_total")
       }
+      if(inputs_int$name[k] == "allSP_MandOrgContribution"){
+        col_in_dat <- which(colnames(dat)== "max_prop_total_external_funding")
+      }
+      #if(sub(".*_", "", inputs_int$name[k]) == "score"){
+      #  col_in_dat <- which(colnames(dat) == "fundability")
+      #}
       
       ##### Analysis at low value ##### 
       
@@ -135,16 +143,15 @@ sensitivity <- function(org_programs, inputs, results_full_analysis, rank_cutoff
     # Fill in the overall program rank results for this program for national and global
     inputs_sens$BCR_national_EV_rank_overall[relevant_program_rows] <- results_overall$BCR_national_EV_rank[which(results_overall$org_program == as.character(org_programs[j]))]
     inputs_sens$BCR_global_EV_rank_overall[relevant_program_rows] <- results_overall$BCR_global_EV_rank[which(results_overall$org_program == as.character(org_programs[j]))]
-  
-    # Calculate the difference in ranks in national and global from the overall program rank
-    #National
-    inputs_sens$difference_in_ranks_overall_minus_low_national <- as.numeric(inputs_sens$BCR_national_EV_rank_overall) - as.numeric(inputs_sens$BCR_national_EV_rank_low)
-    inputs_sens$difference_in_ranks_overall_minus_high_national <- as.numeric(inputs_sens$BCR_national_EV_rank_overall) - as.numeric(inputs_sens$BCR_national_EV_rank_high)
-    #Global
-    inputs_sens$difference_in_ranks_overall_minus_low_global <- as.numeric(inputs_sens$BCR_global_EV_rank_overall) - as.numeric(inputs_sens$BCR_global_EV_rank_low)
-    inputs_sens$difference_in_ranks_overall_minus_high_global <- as.numeric(inputs_sens$BCR_global_EV_rank_overall) - as.numeric(inputs_sens$BCR_global_EV_rank_high)
   } 
   
+  # Calculate the difference in ranks in national and global from the overall program rank
+  #National
+  inputs_sens$difference_in_ranks_overall_minus_low_national <- as.numeric(inputs_sens$BCR_national_EV_rank_overall) - as.numeric(inputs_sens$BCR_national_EV_rank_low)
+  inputs_sens$difference_in_ranks_overall_minus_high_national <- as.numeric(inputs_sens$BCR_national_EV_rank_overall) - as.numeric(inputs_sens$BCR_national_EV_rank_high)
+  #Global
+  inputs_sens$difference_in_ranks_overall_minus_low_global <- as.numeric(inputs_sens$BCR_global_EV_rank_overall) - as.numeric(inputs_sens$BCR_global_EV_rank_low)
+  inputs_sens$difference_in_ranks_overall_minus_high_global <- as.numeric(inputs_sens$BCR_global_EV_rank_overall) - as.numeric(inputs_sens$BCR_global_EV_rank_high)
   #Calculate the swing of national and national ranks 
   inputs_sens$swing_ranks_national <- abs(inputs_sens$difference_in_ranks_overall_minus_low_national) + abs(inputs_sens$difference_in_ranks_overall_minus_high_national)
   inputs_sens$swing_ranks_global <- abs(inputs_sens$difference_in_ranks_overall_minus_low_global) + abs(inputs_sens$difference_in_ranks_overall_minus_high_global)
@@ -156,7 +163,7 @@ sensitivity <- function(org_programs, inputs, results_full_analysis, rank_cutoff
   inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_high) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
   inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) > rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_low) <=rank_cutoff)] <- paste("Yes - out of top", rank_cutoff, "overall but could be in")
   inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) > rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_high) <=rank_cutoff)] <- paste("Yes - out of top", rank_cutoff, "overall but could be in")
-  #national
+  #global
   inputs_sens$decision_sensitive_global <- "No" # initialize
   inputs_sens$decision_sensitive_global[which(as.numeric(inputs_sens$BCR_global_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_global_EV_rank_low) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
   inputs_sens$decision_sensitive_global[which(as.numeric(inputs_sens$BCR_global_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_global_EV_rank_high) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
@@ -198,6 +205,7 @@ draw_tornados_national <- function(inputs_sens){
                          "BCR_national_EV_rank_overall", 
                          "BCR_national_EV_rank_lowORhigh",
                          "tornado_label")
+  int_low_national$input_value[which(int_low_national$subcategory=="Range")] <- inputs_sens$lowGeneral[which(inputs_sens$subcategory=="Range")]
   #Specify data is from low analysis
   int_low_national$lowORhigh <- "low"
   
@@ -208,6 +216,7 @@ draw_tornados_national <- function(inputs_sens){
                              "BCR_national_EV_rank_overall",
                              "BCR_national_EV_rank_high",
                              "tornado_label")]
+
   #Populate column headers
   colnames(int_high_national) <- c("species", "category",
                           "subcategory", "type", 
@@ -215,6 +224,7 @@ draw_tornados_national <- function(inputs_sens){
                           "BCR_national_EV_rank_overall", 
                           "BCR_national_EV_rank_lowORhigh",
                           "tornado_label")
+  int_high_national$input_value[which(int_high_national$subcategory=="Range")] <- inputs_sens$highGeneral[which(inputs_sens$subcategory=="Range")]
   #Specify data is from high analysis
   int_high_national$lowORhigh <- "high"
   
@@ -226,7 +236,7 @@ draw_tornados_national <- function(inputs_sens){
   
   #Turn into character
   inputs_spSpecific_Tornado_national$input_value <- as.character(inputs_spSpecific_Tornado_national$input_value)
-  
+ 
   #Center the data
   inputs_spSpecific_Tornado_national$ranklowOrhigh_minus_rankEV <- as.numeric(inputs_spSpecific_Tornado_national$BCR_national_EV_rank_lowORhigh) -
     as.numeric(inputs_spSpecific_Tornado_national$BCR_national_EV_rank_overall)
@@ -250,16 +260,20 @@ draw_tornados_national <- function(inputs_sens){
     inputs_spSpecific_Tornado_species_national$tornado_order <- rank(-inputs_spSpecific_Tornado_species_national$swing_ranks_national, ties.method = "random")
     
     # Extract only top 20 parameters from ranked list
-    inputs_spSpecific_Tornado_species_top20_national <- inputs_spSpecific_Tornado_species_national[which(inputs_spSpecific_Tornado_species_national$tornado_order <=20),]
+    inputs_spSpecific_Tornado_species_top20_national <- inputs_spSpecific_Tornado_species_national[which(inputs_spSpecific_Tornado_species_national$tornado_order <= 20),]
     
     # Add in hjust so that we can put the labels on the tornado
     inputs_spSpecific_Tornado_species_top20_national$hjust <- NA # initalize
     
-    # Setting hjust to 1.5 (This is outside range of 0 to 1 - need to revisit) for inputs where overall rank is greater than high/low rank
-    inputs_spSpecific_Tornado_species_top20_national$hjust[which(inputs_spSpecific_Tornado_species_top20_national$BCR_national_EV_rank_overall > inputs_spSpecific_Tornado_species_top20_national$BCR_national_EV_rank_lowORhigh)] <- 1
+    # Adjust hjust
+    inputs_spSpecific_Tornado_species_top20_national$hjust[which(inputs_spSpecific_Tornado_species_top20_national$ranklowOrhigh_minus_rankEV < 0)] <- 0
+    inputs_spSpecific_Tornado_species_top20_national$hjust[which(inputs_spSpecific_Tornado_species_top20_national$ranklowOrhigh_minus_rankEV > 0)] <- 1
+    inputs_spSpecific_Tornado_species_top20_national$hjust[which(inputs_spSpecific_Tornado_species_top20_national$ranklowOrhigh_minus_rankEV == 0 &
+                                                                   inputs_spSpecific_Tornado_species_top20_national$lowORhigh=="low")] <- 1
+    inputs_spSpecific_Tornado_species_top20_national$hjust[which(inputs_spSpecific_Tornado_species_top20_national$ranklowOrhigh_minus_rankEV == 0 &
+                                                                   inputs_spSpecific_Tornado_species_top20_national$lowORhigh=="high")] <- 0
     
-    #Setting hjust to -0.5 for inputs where rank_overall is less than or equal to high/low rank
-    inputs_spSpecific_Tornado_species_top20_national$hjust[which(inputs_spSpecific_Tornado_species_top20_national$BCR_national_EV_rank_overall <= inputs_spSpecific_Tornado_species_top20_national$BCR_national_EV_rank_lowORhigh)] <- -0.5
+    
     
     # Make the graph
     
@@ -268,7 +282,7 @@ draw_tornados_national <- function(inputs_sens){
       ggplot2::geom_bar(position="identity", stat="identity") +
       ggplot2::geom_text(ggplot2::aes(y = ranklowOrhigh_minus_rankEV),
                          label = inputs_spSpecific_Tornado_species_top20_national$input_value, 
-                         hjust = inputs_spSpecific_Tornado_species_top20_national$hjust, size = 3) +
+                         hjust = inputs_spSpecific_Tornado_species_top20_national$hjust, size = 4) +
       ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
       ggplot2::scale_fill_manual(values = ggplot2::alpha(c("red","blue"), 0.5), name = "") +
       ggplot2::scale_y_continuous(breaks=seq(-max(inputs_spSpecific_Tornado_species_top20_national$swing_ranks_national, na.rm = TRUE),max(inputs_spSpecific_Tornado_species_top20_national$swing_ranks_national, na.rm = TRUE), by = 1),
@@ -276,7 +290,16 @@ draw_tornados_national <- function(inputs_sens){
                                     round(as.numeric(inputs_spSpecific_Tornado_species_top20_national$BCR_national_EV_rank_overall)[1], 4)) +  # make the axis read the actual values centered around EV instead of zero (which is what needs to be plotted), from https://stackoverflow.com/questions/35324892/ggplot2-setting-geom-bar-baseline-to-1-instead-of-zero
       ggplot2::xlab("Variable") +
       ggplot2::ylab("National Species Rank") +
-      ggplot2::coord_flip()
+      ggplot2::coord_flip()+
+      ggplot2::theme(axis.title = ggplot2::element_text(size=16),
+                     axis.text = ggplot2::element_text(size=16),
+                     strip.text.x = ggplot2::element_text(size=16),
+                     legend.text = ggplot2::element_text(size=16),
+                     legend.title = ggplot2::element_text(size=16),
+                     panel.grid.major = ggplot2::element_blank(), 
+                     panel.grid.minor = ggplot2::element_blank(),
+                     panel.background = ggplot2:: element_blank()) 
+      
     
     print(tornado_ranks_top20_national)
     
@@ -313,6 +336,7 @@ draw_tornados_global <- function(inputs_sens){
                                   "BCR_global_EV_rank_overall", 
                                   "BCR_global_EV_rank_lowORhigh",
                                   "tornado_label")
+  int_low_global$input_value[which(int_low_global$subcategory=="Range")] <- inputs_sens$lowGeneral[which(inputs_sens$subcategory=="Range")]
   
   int_low_global$lowORhigh <- "low"
   
@@ -329,6 +353,8 @@ draw_tornados_global <- function(inputs_sens){
                                    "BCR_global_EV_rank_overall", 
                                    "BCR_global_EV_rank_lowORhigh",
                                    "tornado_label")
+  int_high_global$input_value[which(int_high_global$subcategory=="Range")] <- inputs_sens$highGeneral[which(inputs_sens$subcategory=="Range")]
+  
   
   int_high_global$lowORhigh <- "high"
   
@@ -336,7 +362,7 @@ draw_tornados_global <- function(inputs_sens){
   inputs_spSpecific_Tornado_global <- rbind(int_low_global, int_high_global)
   
   #Create a tornado label
-  inputs_spSpecific_Tornado_global$tornado_label <- inputs_spSpecific_Tornado_global$name # different then before, trying this
+  inputs_spSpecific_Tornado_global$tornado_label <- inputs_spSpecific_Tornado_global$name # different than before, trying this
   
   #Turn into character
   inputs_spSpecific_Tornado_global$input_value <- as.character(inputs_spSpecific_Tornado_global$input_value)
@@ -368,12 +394,14 @@ draw_tornados_global <- function(inputs_sens){
     
     # Add in hjust so that we can put the labels on the tornado
     inputs_spSpecific_Tornado_species_top20_global$hjust <- NA # initalize
-    
-    # Setting hjust to 1.5 (This is outside range of 0 to 1 - need to revisit) for inputs where overall rank is greater than high/low rank
-    inputs_spSpecific_Tornado_species_top20_global$hjust[which(inputs_spSpecific_Tornado_species_top20_global$BCR_global_EV_rank_overall > inputs_spSpecific_Tornado_species_top20_global$BCR_global_EV_rank_lowORhigh)] <- -1
-    
-    #Setting hjust to -0.5 for inputs where rank_overall is less than or equal to high/low rank
-    inputs_spSpecific_Tornado_species_top20_global$hjust[which(inputs_spSpecific_Tornado_species_top20_global$BCR_global_EV_rank_overall <= inputs_spSpecific_Tornado_species_top20_global$BCR_global_EV_rank_lowORhigh)] <- -0.5
+    #Change hjust to make sure labels are placed appropriately
+    inputs_spSpecific_Tornado_species_top20_global$hjust[which(inputs_spSpecific_Tornado_species_top20_global$ranklowOrhigh_minus_rankEV < 0)] <- 0
+    inputs_spSpecific_Tornado_species_top20_global$hjust[which(inputs_spSpecific_Tornado_species_top20_global$ranklowOrhigh_minus_rankEV > 0)] <- 1
+    inputs_spSpecific_Tornado_species_top20_global$hjust[which(inputs_spSpecific_Tornado_species_top20_global$ranklowOrhigh_minus_rankEV == 0 &
+                                                                   inputs_spSpecific_Tornado_species_top20_global$lowORhigh=="low")] <- 1
+    inputs_spSpecific_Tornado_species_top20_global$hjust[which(inputs_spSpecific_Tornado_species_top20_global$ranklowOrhigh_minus_rankEV == 0 &
+                                                                   inputs_spSpecific_Tornado_species_top20_global$lowORhigh=="high")] <- 1
+
     
     # Make the graph
     
@@ -381,8 +409,8 @@ draw_tornados_global <- function(inputs_sens){
                                                                                                                    y =  ranklowOrhigh_minus_rankEV, fill=lowORhigh)) +
       ggplot2::geom_bar(position="identity", stat="identity") +
       ggplot2::geom_text(ggplot2::aes(y = ranklowOrhigh_minus_rankEV),
-                         label = inputs_spSpecific_Tornado_species_top20_global$input_value, 
-                         hjust = inputs_spSpecific_Tornado_species_top20_global$hjust, size = 3) +
+                         label = inputs_spSpecific_Tornado_species_top20_global$input_value,
+                         hjust = inputs_spSpecific_Tornado_species_top20_global$hjust, size = 4) +
       ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
       ggplot2::scale_fill_manual(values = ggplot2::alpha(c("red","blue"), 0.5), name = "") +
       ggplot2::scale_y_continuous(breaks=seq(-max(inputs_spSpecific_Tornado_species_top20_global$swing_ranks_global, na.rm = TRUE),max(inputs_spSpecific_Tornado_species_top20_global$swing_ranks_global, na.rm = TRUE), by = 1),
@@ -390,7 +418,15 @@ draw_tornados_global <- function(inputs_sens){
                                     round(as.numeric(inputs_spSpecific_Tornado_species_top20_global$BCR_global_EV_rank_overall)[1], 4)) +  # make the axis read the actual values centered around EV instead of zero (which is what needs to be plotted), from https://stackoverflow.com/questions/35324892/ggplot2-setting-geom-bar-baseline-to-1-instead-of-zero
       ggplot2::xlab("Variable") +
       ggplot2::ylab("Global Species Rank") +
-      ggplot2::coord_flip()
+      ggplot2::coord_flip()+
+      ggplot2::theme(axis.title = ggplot2::element_text(size=16),
+                              axis.text = ggplot2::element_text(size=16),
+                              strip.text.x = ggplot2::element_text(size=16),
+                              legend.text = ggplot2::element_text(size=16),
+                              legend.title = ggplot2::element_text(size=16),
+                              panel.grid.major = ggplot2::element_blank(), 
+                              panel.grid.minor = ggplot2::element_blank(),
+                              panel.background = ggplot2:: element_blank()) 
     
     print(tornado_ranks_top20_global)
     

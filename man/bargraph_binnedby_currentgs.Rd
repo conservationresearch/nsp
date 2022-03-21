@@ -5,20 +5,20 @@
 \title{Bar graph of the benefits binned by current Green Score}
 \usage{
 bargraph_binnedby_currentgs(
-  results_benefit_global,
-  results_benefit_national,
+  results_BCR_global,
+  results_BCR_national,
   inputs,
   results_overall
 )
 }
 \arguments{
-\item{results_benefit_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
-
-\item{results_benefit_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
-
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{results_overall}{A dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program}
+
+\item{results_benefit_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
+
+\item{results_benefit_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
 }
 \value{
 Returns the figure produced

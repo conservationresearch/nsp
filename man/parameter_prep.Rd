@@ -20,7 +20,7 @@ A dataframe "dat" for a single conservation program which contains n number of v
 }
 \description{
 This function prepares the inputs.csv file, creates the metalog distributions for each parameter using the P5, P50, and P95, and
-lastly draws values from the distribution for parameter. The number of values that are generated is dependent on the user-specified
+lastly draws values from the distribution for each parameter. The number of values that are generated is dependent on the user-specified
 "number_of_simulations"
 }
 \examples{
