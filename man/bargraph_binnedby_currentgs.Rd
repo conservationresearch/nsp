@@ -2,7 +2,7 @@
 % Please edit documentation in R/figures.R
 \name{bargraph_binnedby_currentgs}
 \alias{bargraph_binnedby_currentgs}
-\title{Bar graph of the benefits binned by current Green Score}
+\title{Bar graph of the BCR binned by current Green Score}
 \usage{
 bargraph_binnedby_currentgs(
   results_BCR_global,
@@ -12,21 +12,21 @@ bargraph_binnedby_currentgs(
 )
 }
 \arguments{
+\item{results_BCR_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
+
+\item{results_BCR_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
+
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{results_overall}{A dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program}
-
-\item{results_benefit_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
-
-\item{results_benefit_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
 }
 \value{
 Returns the figure produced
 }
 \description{
 This function can be used when the cost benefit analysis function cba_GplusD_LongTermPot_BinnedByGS is used. This function creates a bargraph of
-the national and global benefits, binned into groups based on the current Green Score of each program at the national and global levels
+the national and global BCRs, binned into groups based on the current Green Score of each program at the national and global levels
 }
 \examples{
-bargraph_binnedby_currentgs(results_benefit_global, results_benefit_national, inputs, results_overall)
+bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
 }

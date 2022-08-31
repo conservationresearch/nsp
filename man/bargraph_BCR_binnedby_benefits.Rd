@@ -2,7 +2,7 @@
 % Please edit documentation in R/figures.R
 \name{bargraph_BCR_binnedby_benefits}
 \alias{bargraph_BCR_binnedby_benefits}
-\title{Bar graph of the benefits with binning of the benefits}
+\title{Bar graph of the BCR binned based on benefits}
 \usage{
 bargraph_BCR_binnedby_benefits(
   results_BCR_national,
@@ -12,13 +12,13 @@ bargraph_BCR_binnedby_benefits(
 )
 }
 \arguments{
+\item{results_BCR_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
+
+\item{results_BCR_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
+
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{results_overall}{A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program}
-
-\item{results_benefit_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
-
-\item{results_benefit_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
 }
 \value{
 Returns the figure produced
@@ -28,6 +28,6 @@ This function can be used when the cost benefit analysis function cba_GplusD_Bin
 national and global benefits, giving priority to those that have the highest benefit.
 }
 \examples{
-bargraph_binnedby_benefits(results_benefit_national, results_benefit_global, inputs, results_overall)
+bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 
 }

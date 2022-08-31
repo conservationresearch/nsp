@@ -5,7 +5,7 @@
 # Last update: July 27, 2021
 
 #Dylan Cole
-#September 7, 2021
+#Began September 7, 2021
 #Incorporating code written by Laura Keating and Alyssa Friesen 
 
 
@@ -13,18 +13,21 @@
 rm(list = ls())
 
 ### Load libraries
-library(newSpeciesPrioritization) # uncomment out when done in development mode
+library(newSpeciesPrioritization)
 library(dplyr)
 library(ggplot2)
 library(ggrepel)
 library(rmetalog)
 library(data.table)
+library(gtable)
+library(gridExtra)
+
 
 ########## Analysis setup ##########
 
 ### Specify the input csv spreadsheet 
 inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v4.csv")
-#And adjust when necessary
+#Adjust any names/labels
 inputs$species<-gsub(" (caurina subspecies)","", inputs$species, fixed=TRUE)
 inputs$name<-gsub(" (caurina subspecies)_","_", inputs$name, fixed=TRUE)
 
@@ -52,7 +55,7 @@ conservation_breeding <-c("Banff Springs Snail", "Woodland Caribou","Boreal Felt
 ### Specify epsilon value if using functions 7 or 8 (see below)
 epsilon <- 0.0375
 
-### Identify the program names
+### Identify the program names from imported CSV
 org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
 
 ########## Main analysis function ##########
@@ -71,7 +74,7 @@ results_full_analysis <-  newSpeciesPrioritization::cba_GplusD_LongTermPot_Curre
                                                  inputs = inputs,
                                                  functional_score_max = functional_score_max)
                                         
-### Store the results for easy use later
+### Store the results
 results_overall <- results_full_analysis[[1]]
 results_cost_total <- results_full_analysis[[2]]
 results_cost_organization <- results_full_analysis[[3]]
@@ -115,7 +118,7 @@ figure_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_nation
 figure_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs)
 figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_BCR_global)
 figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(results_BCR_national,results_BCR_global, inputs)
-
+figure_direction_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_directional_uncertainty(results_BCR_national, results_BCR_global, inputs)
 
 # Only use if performing binned analysis
 figure_bincgain<-newSpeciesPrioritization::bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
@@ -130,15 +133,18 @@ figure_bincurrentgs_scatterglobal<-newSpeciesPrioritization::scatter_bin_current
 ########## Export tables and figures ##########
 
 # Export panel of figures
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v3/Option6_BCRUncertainty.tiff"
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v4 - Revision Stage/Option6_BCR_Uncertainty_v3.tiff"
+grid::grid.newpage()
+
 tiff(filename, width=18, height=10, units="in",
      pointsize=14, compression="lzw", bg="white",res=1080,
      restoreConsole=TRUE)
-gridExtra::grid.arrange(figure_BCR,figure_BCR_uncertainty, ncol = 2, nrow = 1)
+grid::grid.draw(cbind(figure_BCR, figure_direction_BCR_uncertainty))
+gridExtra::grid.arrange(figure_BCR,figure_direction_BCR_uncertainty, ncol = 2, nrow = 1)
 dev.off()
 
 #Doing fig 1 A+B, and fig 2 A+B to get them sized appropriately
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/option8_panel_benefit_costv2.tiff"
+filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Manuscript Figures Final/Final Figures v4 - Revision Stage/option6_panel_benefit_costv2.tiff"
 tiff(filename, width=12, height=18, units="in",
      pointsize=14, compression="lzw", bg="white", res=600,
      restoreConsole=TRUE)
@@ -149,7 +155,7 @@ filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents
 tiff(filename, width=18, height=10, units="in",
      pointsize=14, compression="lzw", bg="white", res=1080,
      restoreConsole=TRUE)
-gridExtra::grid.arrange(BCR_graph_final, BCR_credi_final, ncol=2, nrow=1)
+gridExtra::grid.arrange(BCR_graph_final, figure_direction_BCR_uncertainty, ncol=2, nrow=1)
 dev.off()
 
 #Export Option 3 / 4 figures

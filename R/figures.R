@@ -207,20 +207,19 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   
 }#end of the graph_cost function
 
-
-##### Bar graph of the benefits binned by conservation benefits - ONLY APPLICABLE IF USING BINNED ANALYSIS METHOD #####
-#' Bar graph of the benefits with binning of the benefits
+##### Bar graph of the BCR binned by conservation benefits - ONLY APPLICABLE IF USING BINNED ANALYSIS METHOD #####
+#' Bar graph of the BCR binned based on benefits
 #'
 #' This function can be used when the cost benefit analysis function cba_GplusD_BinnedByBenefit is used. This function creates a figure depicting the
 #' national and global benefits, giving priority to those that have the highest benefit. 
 #'
-#' @param results_benefit_national A dataframe produced from the cost benefit analysis that outlines the national benefit each program
-#' @param results_benefit_global A dataframe produced from the cost benefit analysis that outlines the global benefit each program
+#' @param results_BCR_national A dataframe produced from the cost benefit analysis that outlines the national benefit each program
+#' @param results_BCR_global A dataframe produced from the cost benefit analysis that outlines the global benefit each program
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program
 #' @return Returns the figure produced
 #' @examples
-#' bargraph_binnedby_benefits(results_benefit_national, results_benefit_global, inputs, results_overall)
+#' bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 #'
 #' @export
 
@@ -410,19 +409,19 @@ scatter_bin_benefits_global<-function(results_benefit_global, inputs, results_ov
 }#end of the scatter_bin_cgains_global function
 
 
-##### Bar graph of the benefits binned by current Green Score - ONLY APPLICABLE IF USING BINNED ANALYSIS METHOD ##### 
-#' Bar graph of the benefits binned by current Green Score
+##### Bar graph of the BCR binned by current Green Score - ONLY APPLICABLE IF USING BINNED ANALYSIS METHOD ##### 
+#' Bar graph of the BCR binned by current Green Score
 #' 
 #' This function can be used when the cost benefit analysis function cba_GplusD_LongTermPot_BinnedByGS is used. This function creates a bargraph of
-#' the national and global benefits, binned into groups based on the current Green Score of each program at the national and global levels
+#' the national and global BCRs, binned into groups based on the current Green Score of each program at the national and global levels
 #'
-#' @param results_benefit_global  A dataframe produced from the cost benefit analysis that outlines the global benefit each program
-#' @param results_benefit_national A dataframe produced from the cost benefit analysis that outlines the national benefit each program
+#' @param results_BCR_global  A dataframe produced from the cost benefit analysis that outlines the global benefit each program
+#' @param results_BCR_national A dataframe produced from the cost benefit analysis that outlines the national benefit each program
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program
 #' @return Returns the figure produced
 #' @examples
-#' bargraph_binnedby_currentgs(results_benefit_global, results_benefit_national, inputs, results_overall)
+#' bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
 #' @export
 
 bargraph_binnedby_currentgs<-function(results_BCR_global, results_BCR_national, inputs, results_overall){
@@ -803,5 +802,100 @@ graph_BCR_uncertainty <- function(results_BCR_national,results_BCR_global, input
   
   
   return(BCR_credi_final)
+  
+}#end of the graph_BCR function
+
+##### Graphing the directional uncertainty of the BCR results ##### 
+#' Figure of the directional uncertainty of the mean BCR results
+#'
+#' This function produces a figure of the directional uncertainty around the zero-centered means benefit-cost ratios at the national and global ratios for each program. 
+#'
+#' @param results_BCR_national A dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the national level
+#' @param results_BCR_global A dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the global level
+#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @return Returns the figure produced
+#' @examples
+#' graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
+#' @export
+
+graph_BCR_directional_uncertainty <- function(results_BCR_national,results_BCR_global, inputs){
+  
+  #### Plotting directional credible intervals rather than total amount #####
+  results_BCR_global$Category <- "Global"
+  results_BCR_national$Category <- "National"
+  #Center data
+  temp_bcr_national<-results_BCR_national
+  temp_bcr_global<-results_BCR_global
+  #recenter data
+  temp_bcr_national$centered_BCR_mean<-temp_bcr_national$mean-temp_bcr_national$mean
+  temp_bcr_national$centered_BCR_UCL<-temp_bcr_national$P5-temp_bcr_national$mean
+  temp_bcr_national$centered_BCR_LCL<-temp_bcr_national$P95-temp_bcr_national$mean
+  
+  temp_bcr_global$centered_BCR_mean<-temp_bcr_global$mean-temp_bcr_global$mean
+  temp_bcr_global$centered_BCR_UCL<-temp_bcr_global$P5-temp_bcr_global$mean
+  temp_bcr_global$centered_BCR_LCL<-temp_bcr_global$P95-temp_bcr_global$mean
+  
+  temp_bcr<-rbind(temp_bcr_national, temp_bcr_global)
+  
+  #Prepping the extinct vs extant for the facet panelling 
+  
+  species_extirpated_national <- inputs$species[which(inputs$subcategory=="GScurrentNational" & inputs$baseP50==0)]
+  species_extinct_global <- inputs$species[which(inputs$subcategory=="GScurrentGlobal" & inputs$baseP50==0)]
+  extirpated_or_extinct <- c(species_extirpated_national, species_extinct_global)
+  temp_bcr$extirpated_or_extinct <- "Extant" #initialize
+  temp_bcr$extirpated_or_extinct[is.na(match(temp_bcr$org_program, extirpated_or_extinct)) == FALSE] <- "Extirpated"
+  temp_bcr$extirpated_or_extinct <- factor(temp_bcr$extirpated_or_extinct, levels = c("Extirpated", "Extant"))
+  
+  #Reorder based on national level
+  temp_bcr$org_program <- factor(temp_bcr$org_program, 
+                                       levels=unique(temp_bcr$org_program[order(-results_BCR_national$mean, decreasing = TRUE)]), ordered=TRUE)
+  #### Make figure 
+  BCR_directional_credible_intervals<-  ggplot2::ggplot(temp_bcr, ggplot2::aes(y = org_program, x = centered_BCR_mean, alpha = Category)) + 
+    ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
+    #ggplot2::geom_point(stat="identity",position = ggplot2::position_dodge()) + 
+    ggplot2::geom_errorbar(aes(xmin=centered_BCR_LCL*100000, xmax=centered_BCR_UCL*100000), width = 0.75, position = ggplot2::position_dodge2(width=0.9)) +
+    ggplot2::facet_wrap(. ~ extirpated_or_extinct, scales="free", nrow=2, ncol=1) + 
+    ggplot2::scale_alpha_manual(values=c(1,.3)) +
+    ggplot2::geom_vline(xintercept = 0, lty="dashed") + 
+    ggplot2::labs(x = "90% confidence interval of zero-centered Mean BCR",
+                  y = "", 
+                  title = "b") +
+    ggplot2::geom_hline(yintercept = 0, linetype = "solid", color = "black") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text=ggplot2::element_text(size=16),
+                   axis.text.y=ggplot2::element_blank(),
+                   axis.title=ggplot2::element_text(size=16),
+                   strip.text=ggplot2::element_text(size=16),
+                   legend.text = ggplot2::element_text(size=16),
+                   legend.title = ggplot2::element_text(size=16),
+                   legend.justification = c(1,1), 
+                   legend.position = c(0.95,0.35),
+                   panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank())
+  
+  # Now get the facets spaced more appropriately
+  # following https://stackoverflow.com/questions/52341385/how-to-automatically-adjust-the-width-of-each-facet-for-facet-wrap/52422707
+  # convert ggplot object to grob object
+  gp2 <- ggplot2::ggplotGrob(BCR_directional_credible_intervals)
+  # optional: take a look at the grob object's layout
+  gtable::gtable_show_layout(gp2)
+  
+  # get gtable columns corresponding to the facets (5 & 9, in this case)
+  facet.columns2 <- gp2$layout$t[grepl("panel", gp2$layout$name)]
+  
+  # get the number of unique x-axis values per facet (1 & 3, in this case)
+  y.var2 <- sapply(ggplot2::ggplot_build(BCR_directional_credible_intervals)$layout$panel_scales_y,
+                   function(t) length(t$range$range))
+  
+  # change the relative widths of the facet columns based on
+  # how many unique x-axis values are in each facet
+  gp2$heights[facet.columns2] <- gp2$heights[facet.columns2] * y.var2
+  
+  # plot result
+  grid::grid.draw(gp2)
+  BCR_credi_direction_final <- gp2
+  
+  
+  return(BCR_credi_direction_final)
   
 }#end of the graph_BCR function

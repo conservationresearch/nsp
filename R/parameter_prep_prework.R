@@ -109,7 +109,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                         boundedness = 'sl',
                                         probs = c(0.05, 0.5, 0.95))
       
-      results_vector <- rrmetalog::metalog(metalog_dist, number_of_simulations, term = 3)
+      results_vector <- rmetalog::metalog(metalog_dist, number_of_simulations, term = 3)
     }
     return(results_vector)
   }
@@ -117,7 +117,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   # Write a function to apply a metalog distribution to the benefit inputs   
   metalogSelectBenefit <- function(P5, P50, P95, lower_bound, upper_bound, number_of_simulations){
     if(P5 != P50 && P50 != P95){
-      metalog_dist <<- rmetalog::metalog(c(P5,P50,P95), 
+      metalog_dist <- rmetalog::metalog(c(P5,P50,P95), 
                                         term_limit = 3,
                                         bounds=c(lower_bound, upper_bound),
                                         boundedness = 'b',
@@ -126,7 +126,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
     }
 
     if (P5 == P50 && P50 != P95){
-      metalog_dist <<- rmetalog::metalog(c(P5,P5,P5,P5,P5,P5,P50,P95),
+      metalog_dist <- rmetalog::metalog(c(P5,P5,P5,P5,P5,P5,P50,P95),
                                          term_limit=8,
                                          bounds=c(lower_bound, upper_bound),
                                          boundedness = 'b',
@@ -135,7 +135,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
     }
     
     if (P50 == P95 && P5 != P50){
-      metalog_dist <<- rmetalog::metalog(c(P5,P50,P50,P50,P50,P50,P50,P95),
+      metalog_dist <- rmetalog::metalog(c(P5,P50,P50,P50,P50,P50,P50,P95),
                                          term_limit=8,
                                          bounds=c(lower_bound, upper_bound),
                                          boundedness = 'b',
