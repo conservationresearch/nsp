@@ -1,6 +1,6 @@
-
+# This script contains the pre-work functions to generate values used in main cost-benefit analysis
 # Dylan Cole
-# August 2021
+# Started August 2021
 # Primarily using code written by Laura Keating (July 2021) with some changes and cleanup
 
 
@@ -10,7 +10,7 @@
 #' lastly draws values from the distribution for each parameter. The number of values that are generated is dependent on the user-specified
 #' "number_of_simulations" 
 #' 
-#' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param inputs A csv file containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param org_program A vector of the conservation program names
 #' @param G_and_A_prop A value specifying the proportion of total cost that must be added on top of total cost
 #' @param number_of_simulations A value specifying number of value draws for each parameter for each conservation program
@@ -26,16 +26,15 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   # Call the appropriate species specific data from the inputs file
   inputs_parameter_prep <- inputs[which(inputs$species == org_program),]
   
-  
   ##### Create a data frame to store the results #####
-  
+  #For Costs
   dat_cost <- as.data.frame(matrix(nrow=number_of_simulations, ncol=11))
   colnames(dat_cost) <- c("cost_CB", "cost_RR",
                           "max_prop_total_external_funding", "G_and_A_prop_of_total",
                           "cost_total_project_without_G_and_A", "G_and_A",
                           "cost_total_project",  "fundability",
                           "max_external_funding", "external_funding", "cost_organization")
-  
+  #For Benefits
   dat_benefit <- as.data.frame(matrix(nrow=number_of_simulations, ncol=8))
   colnames(dat_benefit) <- c("GSfutureWConservation",
                              "GSfutureWOconservation",
@@ -45,7 +44,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                              "OrgBenefit", 
                              "species_range_pct_in_nation")
   
-  #Create intermediate dataframe to store results of two Future parameters which will then be sampled from if Future with-future without is <0
+  # Create intermediate dataframe to store results of two Future parameters which will then be sampled from if Future with-future without is <0
   dat_benefit_int<-as.data.frame(matrix(nrow=number_of_simulations_extra, ncol=2))
   colnames(dat_benefit_int)<- c("GSFutureWCon", "GSFutureWOCon")
   
@@ -150,9 +149,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   }
   
   ######  Fill in dat_cost with the relevant parameter draws #####
-  
   # Captive breeding costs
-  
   cost_CB_total_low <- as.numeric(inputs_parameter_prep$lowP5[which(inputs_parameter_prep$category == "Costs" &
                                                                       inputs_parameter_prep$subcategory== "Captive Breeding")])
   cost_CB_total_base <- as.numeric(inputs_parameter_prep$baseP50[which(inputs_parameter_prep$category == "Costs" &
@@ -167,7 +164,6 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                                                number_of_simulations = number_of_simulations)
   
   # Release and Research costs
-  
   cost_RR_total_low <- as.numeric(inputs_parameter_prep$lowP5[which(inputs_parameter_prep$category == "Costs" &
                                                                       inputs_parameter_prep$subcategory== "Release and Research")])
   cost_RR_total_base <- as.numeric(inputs_parameter_prep$baseP50[which(inputs_parameter_prep$category == "Costs" &
@@ -182,7 +178,6 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                                                number_of_simulations = number_of_simulations)
   
   # Maximum percent of total external funding allowed
-  
   max_pct_total_external_funding_low <- 100 - as.numeric(as.character(inputs$highP95[which(inputs$type == "Mandatory Organization Contribution")]))
   max_pct_total_external_funding_base <- 100 - as.numeric(as.character(inputs$baseP50[which(inputs$type == "Mandatory Organization Contribution")]))
   max_pct_total_external_funding_high <- 100 - as.numeric(as.character(inputs$lowP5[which(inputs$type == "Mandatory Organization Contribution")]))
@@ -195,7 +190,6 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                                                                        number_of_simulations = number_of_simulations)/100 # convert the results from percent to proportion
   
   #General and Admin costs
-  
   G_and_A_prop_total_low <- as.numeric(as.character(inputs$lowP5[which(inputs$type == "General and Administrative")]))/100 # note, our input here didn't have uncertainty but we built in the flexibility to change it later if we want to.
   G_and_A_prop_total_base <- as.numeric(as.character(inputs$baseP50[which(inputs$type == "General and Administrative")]))/100
   G_and_A_prop_total_high <- as.numeric(as.character(inputs$highP95[which(inputs$type == "General and Administrative")]))/100
@@ -214,7 +208,6 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   dat_cost$cost_total_project <- dat_cost$cost_total_project_without_G_and_A + dat_cost$G_and_A
   
   # Calculate fundability (i.e. external funding potential
-  
   fundability_low <- as.numeric(inputs_parameter_prep$lowP5[which(inputs_parameter_prep$subcategory== "Fundability")])
   fundability_base <- as.numeric(inputs_parameter_prep$baseP50[which(inputs_parameter_prep$subcategory== "Fundability")])
   fundability_high <- as.numeric(inputs_parameter_prep$highP95[which(inputs_parameter_prep$subcategory== "Fundability")])
@@ -236,24 +229,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
                                                                    number_of_simulations = number_of_simulations)
   
   ######  Fill in dat_benefit with the relevant parameter draws #####
-  
-  ### OLD
-  # Benefits
-  #row_GSGainPlusDependence <- which(inputs_parameter_prep$subcategory == "GSGainPlusDependence")
-  #benefit_low <- as.numeric(inputs_parameter_prep$lowP5[row_GSGainPlusDependence])
-  #benefit_base <- as.numeric(inputs_parameter_prep$baseP50[row_GSGainPlusDependence])
-  #benefit_high <- as.numeric(inputs_parameter_prep$highP95[row_GSGainPlusDependence])
-  #Populate GainPlusDependence
-  #dat_benefit$GSGainPlusDependence <- metalogSelectBenefit(P5 = benefit_low,
-  #                                                        P50 = benefit_base,
-  #                                                        P95 = benefit_high,
-  #                                                        lower_bound = max(-100, benefit_low-abs((2*benefit_low)-0.001)),
-  #                                                        upper_bound = min(100, 2*benefit_high),
-  #                                                        number_of_simulations = number_of_simulations)
-  #In rare scenario where current GSGainPlusDependence is < 0, setting it to 0
-  #dat_benefit$GSGainPlusDependence[which(dat_benefit$GSGainPlusDependence < 0)] <- 0
-  
-  ### NEW
+
   #Future with conservation translocation
   row_GSFutureWConservation <- which(inputs_parameter_prep$subcategory == "GSfutureWConservation")
   future_with_low<-as.numeric(inputs_parameter_prep$lowP5[row_GSFutureWConservation])
@@ -263,9 +239,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   dat_benefit_int$GSFutureWCon <- metalogSelectBenefit(P5 = future_with_low,
                                                        P50 = future_with_base,
                                                        P95 = future_with_high,
-                                                       #lower_bound = max(-100, future_with_low-(abs((2*future_with_low)-0.001))),
                                                        lower_bound = if(future_with_low==0){-100}else{-0.001},
-                                                       #upper_bound = min(100, 2*future_with_high),
                                                        upper_bound = if(future_with_high==100){200}else{100.001},
                                                        number_of_simulations = number_of_simulations_extra)
   #In rare scenario where longterm asp is < 0, setting it to 0
@@ -280,9 +254,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   dat_benefit_int$GSFutureWOCon <- metalogSelectBenefit(P5 = future_without_low,
                                                         P50 = future_without_base,
                                                         P95 = future_without_high,
-                                                        #lower_bound = max(-100, future_without_low-(abs((2*future_without_low)-0.001))),
                                                         lower_bound = if(future_without_low==0){-100}else{-0.001},
-                                                        #upper_bound = min(100, 2*future_without_high),
                                                         upper_bound = if(future_without_high==100){200}else{100.001},
                                                         number_of_simulations = number_of_simulations_extra)
   
@@ -307,12 +279,9 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   dat_benefit$GSlongtermAspiration <- metalogSelectBenefit(P5 = longterm_aspiration_low,
                                                            P50 = longterm_aspiration_base, 
                                                            P95 = longterm_aspiration_high,
-                                                           #lower_bound = max(-100, longterm_aspiration_low-abs((2*longterm_aspiration_low)-0.001)),
                                                            lower_bound = if(longterm_aspiration_low==0){-100}else{-0.001},
-                                                           #upper_bound = min(100.001, 2*longterm_aspiration_high),
                                                            upper_bound = if(future_without_high==100){200}else{100.001},
                                                            number_of_simulations = number_of_simulations)
-  
   
   #In rare scenario where longterm asp is < 0, setting it to 0
   dat_benefit$GSlongtermAspiration[which(dat_benefit$GSlongtermAspiration <= 0)] <- epsilon
@@ -322,7 +291,6 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
     if (dat_benefit[i,"GSGainPlusDependence"] > dat_benefit[i,"GSlongtermAspiration"])
     { dat_benefit[i,"GSGainPlusDependence"] <- dat_benefit[i,"GSlongtermAspiration"]
     }}
-  
   
   # current - national
   row_current_national <- which(inputs_parameter_prep$subcategory== "GScurrentNational")
@@ -334,9 +302,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   dat_benefit$GScurrentNational <- metalogSelectBenefit(P5 = current_national_low,
                                                         P50 = current_national_base, 
                                                         P95 = current_national_high,
-                                                        #lower_bound = max(-100, current_national_high-((2*current_national_high)-0.001)),
                                                         lower_bound= if(current_national_low==0){-100}else{-0.001},
-                                                        #upper_bound = min(100, 2*current_national_high),
                                                         upper_bound = if(current_national_high==0){200}else{100.001},
                                                         number_of_simulations = number_of_simulations)
   #In rare scenario where current GS is < 0, setting it to 0 
@@ -352,9 +318,7 @@ parameter_prep <- function(inputs, org_program, G_and_A_prop,
   dat_benefit$GScurrentGlobal <- metalogSelectBenefit(P5 = current_global_low,
                                                       P50 = current_global_base, 
                                                       P95 = current_global_high,
-                                                      #lower_bound = max(-100, current_global_low-((2*current_global_low)-0.001)),
                                                       lower_bound= if(current_global_low==0){-100}else{-0.001},
-                                                      #upper_bound = min(100.001, 2*current_global_high),
                                                       upper_bound = if(current_global_high==0){200}else{100.001},
                                                       number_of_simulations = number_of_simulations)
   #In rare scenario where current GS is < 0, setting it to 0 

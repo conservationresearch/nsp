@@ -1,6 +1,7 @@
-#This file contains the functions for figure production
-#Includes code originally written by Laura Keating (Last updated July 2021) and continued by Dylan Cole
-
+# This script contains the functions for figure production
+# Dylan Cole
+# Started August 2021
+# Primarily using code written by Laura Keating (July 2021) with some changes and cleanup
 
 ##### Graphing the benefits #####
 #' Figure of national and global benefits
@@ -17,7 +18,7 @@
 
 graph_benefit <- function(results_benefit_national, results_benefit_global, inputs){
   
-  #Make Global vs National distrinction and collect data for figure
+  #Make Global vs National distinction and collect data for figure
   results_benefit_global$Category <- "Global"
   results_benefit_national$Category <- "National"
   sim_results_summary_benefits <- rbind(results_benefit_national,results_benefit_global)
@@ -75,7 +76,6 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
                    panel.grid.minor = ggplot2::element_blank()) 
   
   # Spacing facets
-  # following https://stackoverflow.com/questions/52341385/how-to-automatically-adjust-the-width-of-each-facet-for-facet-wrap/52422707
   # convert ggplot object to grob object
   gp <- ggplot2::ggplotGrob(benefits_graph2)
   # optional: take a look at the grob object's layout
@@ -134,7 +134,7 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   #sim_results_summary_costs$org_program <- factor(sim_results_summary_costs$org_program, 
   #                                                levels=unique(results_benefit_global$org_program[order(-sim_results_summary_costs$mean, decreasing = TRUE)]), ordered=TRUE)
   
-  #Reodering based on decreasing BENEFITS
+  #Reodering based on decreasing benefits
   sim_results_summary_costs$org_program<-factor(sim_results_summary_benefits$org_program, 
                                                 levels=unique(results_benefit_national$org_program[order(-sim_results_summary_benefits$mean, decreasing = TRUE)]), ordered=TRUE)
   
@@ -179,13 +179,9 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
                    panel.grid.major = ggplot2::element_blank(), 
                    panel.grid.minor = ggplot2::element_blank())
   
-  
-  
   # Spacing facets
-  # following https://stackoverflow.com/questions/52341385/how-to-automatically-adjust-the-width-of-each-facet-for-facet-wrap/52422707
   # convert ggplot object to grob object
   gp <- ggplot2::ggplotGrob(costs_graph2)
-  # optional: take a look at the grob object's layout
   # gtable::gtable_show_layout(gp)
   
   # get gtable columns corresponding to the facets (5 & 9, in this case)
@@ -244,8 +240,7 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
   sim_results_summary_bincgain$bin_numeric[which(sim_results_summary_bincgain$Bin=="Low")]<-2
   sim_results_summary_bincgain$bin_numeric[which(sim_results_summary_bincgain$Bin=="Zero")]<-1
   
-  #Reorder based on bin then by decreasing benefit
-
+  #Reorder based on bin then by decreasing benefits
   sim_results_summary_bincgain$org_program <- factor(sim_results_summary_bincgain$org_program, 
                                                      levels=unique(sim_results_summary_bincgain$org_program[
                                                        order(-sim_results_summary_bincgain$bin_numeric, -sim_results_summary_bincgain$mean, decreasing=FALSE
@@ -256,7 +251,7 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
                                                        )]), ordered=TRUE)
 
   #Make the graph
-  ## Color code the bars - Red, green, blue
+  #
   bin_cgains_bargraph <- ggplot2::ggplot(sim_results_summary_bincgain, ggplot2::aes(y = org_program, x=mean*100000, fill = Category, color = Bin)) +
     ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
     ggplot2::geom_text(ggplot2::aes(label = lab, color="black"), color="black", show.legend = FALSE,vjust=0.70, hjust=0.1,size = 10) +
@@ -379,9 +374,7 @@ scatter_bin_benefits_global<-function(results_benefit_global, inputs, results_ov
                                                results_benefit_global$bin_cgainGlobal=="Medium"~"darkorange",
                                                results_benefit_global$bin_cgainGlobal=="Low"~"green",
                                                results_benefit_global$bin_cgainGlobal=="Zero"~"black"))+
-    ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +
-    #ggrepel::geom_text_repel(data=subset(results_benefit_global,bin_cgainGlobal=="High"),position="") +
-    ggplot2::geom_segment(aes(x=0, y=0, xend=40, yend=40), color="black", linetype=2) +
+    ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +    ggplot2::geom_segment(aes(x=0, y=0, xend=40, yend=40), color="black", linetype=2) +
     ggplot2::geom_segment(aes(x=10, y=10, xend=90, yend=10), color="black",linetype=2) +
     ggplot2::geom_segment(aes(x=40, y=40, xend=60, yend=40), color="black", linetype=2) +
     ggplot2::geom_segment(aes(x=0, y=100, xend=100, yend=0), color="black",linetype=2) +
@@ -465,11 +458,9 @@ bargraph_binnedby_currentgs<-function(results_BCR_global, results_BCR_national, 
                                          "Moderately Depleted" = "green",
                                          "Slightly Depleted" = "blue",
                                          "Fully Recovered"= "black")) +
-    #ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +
     ggplot2::labs(x = "Mean BCR (conservation value per 100 000 CAD)",
                   y = "Species",
                   title="a") +
-                  #title="C")                         
     ggplot2::labs(alpha = "Category", fill = "Category") +
     ggplot2::theme_bw() +
     ggplot2::theme(plot.title = ggplot2::element_text(size=20),
@@ -481,7 +472,6 @@ bargraph_binnedby_currentgs<-function(results_BCR_global, results_BCR_national, 
                    legend.position = c(0.85,0.65),
                    panel.grid.major = ggplot2::element_blank(),
                    panel.grid.minor = ggplot2::element_blank())+
-    #ggplot2::guides(override.aes=aes(label=""))+
     ggplot2::theme(legend.key.size=unit(0.5, "cm"))
   
   
@@ -672,13 +662,11 @@ graph_BCR <- function(results_BCR_national,results_BCR_global){
     ggplot2::facet_wrap(. ~ extirpated_or_extinct,nrow=2, ncol=1, scales="free") + 
     ggplot2::scale_alpha_manual(values=c(1,.3)) +
     ggplot2::geom_text(ggplot2::aes(label = lab), show.legend = FALSE, vjust=0.5, size = 10, color = "black")+
-    #ggplot2::geom_errorbar(position=ggplot2::position_dodge(width=0.9), ggplot2::aes(xmin=P5*100000, xmax=P95*100000), width=.1, color = "black") +
     ggplot2::labs( x = xbcrlabel,
                    # y = "Average BCR \n (% Change in 50yr Species Persistence per 100 000 CAD)",
                    # y = "Average BCR \n (Green Status Gain plus Dependence (%) per 100 000 CAD)",
                    y = "Species program",
                    title = "a") +
-    #ggplot2::ylim(0,max(results_BCR_all$mean)+5) +
     ggplot2::geom_hline(yintercept = 0, linetype = "solid", color = "black") +
     ggplot2::theme_bw() +
     ggplot2::theme(legend.title = ggplot2::element_text(size=16),
@@ -686,15 +674,11 @@ graph_BCR <- function(results_BCR_national,results_BCR_global){
                    axis.title = ggplot2::element_text(size=16),
                    axis.text = ggplot2::element_text(size=16),
                    strip.text = ggplot2::element_text(size=16),
-                   #axis.text.y = ggplot2::element_blank(),
                    legend.justification = c(1,1),
                    legend.position = c(0.95,0.35),
                    panel.grid.major = ggplot2::element_blank(),
                    panel.grid.minor = ggplot2::element_blank())
      
-  
-  # Now get the facets spaced more appropriately
-  # following https://stackoverflow.com/questions/52341385/how-to-automatically-adjust-the-width-of-each-facet-for-facet-wrap/52422707
   # convert ggplot object to grob object
   gp <- ggplot2::ggplotGrob(BCR_graph)
   # optional: take a look at the grob object's layout
@@ -778,9 +762,7 @@ graph_BCR_uncertainty <- function(results_BCR_national,results_BCR_global, input
                    panel.grid.major = ggplot2::element_blank(),
                    panel.grid.minor = ggplot2::element_blank())
   
-  # Now get the facets spaced more appropriately
-  # following https://stackoverflow.com/questions/52341385/how-to-automatically-adjust-the-width-of-each-facet-for-facet-wrap/52422707
-  # convert ggplot object to grob object
+   # convert ggplot object to grob object
   gp2 <- ggplot2::ggplotGrob(BCR_credible_intervals)
   # optional: take a look at the grob object's layout
   gtable::gtable_show_layout(gp2)
@@ -852,7 +834,6 @@ graph_BCR_directional_uncertainty <- function(results_BCR_national,results_BCR_g
   #### Make figure 
   BCR_directional_credible_intervals<-  ggplot2::ggplot(temp_bcr, ggplot2::aes(y = org_program, x = centered_BCR_mean, alpha = Category)) + 
     ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
-    #ggplot2::geom_point(stat="identity",position = ggplot2::position_dodge()) + 
     ggplot2::geom_errorbar(aes(xmin=centered_BCR_LCL*100000, xmax=centered_BCR_UCL*100000), width = 0.75, position = ggplot2::position_dodge2(width=0.9)) +
     ggplot2::facet_wrap(. ~ extirpated_or_extinct, scales="free", nrow=2, ncol=1) + 
     ggplot2::scale_alpha_manual(values=c(1,.3)) +
@@ -873,8 +854,6 @@ graph_BCR_directional_uncertainty <- function(results_BCR_national,results_BCR_g
                    panel.grid.major = ggplot2::element_blank(),
                    panel.grid.minor = ggplot2::element_blank())
   
-  # Now get the facets spaced more appropriately
-  # following https://stackoverflow.com/questions/52341385/how-to-automatically-adjust-the-width-of-each-facet-for-facet-wrap/52422707
   # convert ggplot object to grob object
   gp2 <- ggplot2::ggplotGrob(BCR_directional_credible_intervals)
   # optional: take a look at the grob object's layout

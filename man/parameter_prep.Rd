@@ -7,7 +7,7 @@
 parameter_prep(inputs, org_program, G_and_A_prop, number_of_simulations)
 }
 \arguments{
-\item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
+\item{inputs}{A csv file containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{org_program}{A vector of the conservation program names}
 

@@ -1,7 +1,7 @@
-#This file contains the sensitivity analysis
-#Dylan Cole
-#September 2021
-#Incorporated code written by Laura Keating (July 2021) 
+# This script contains the sensitivity analysis
+# Dylan Cole
+# Started August 2021
+# Primarily using code written by Laura Keating (July 2021) with some changes and cleanup 
 
 
 ##### Sensitivity Analysis #####

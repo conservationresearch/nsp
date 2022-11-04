@@ -1,15 +1,15 @@
 # This code runs a cost benefit analysis to prioritize new potential species for
 # an organization's Conservation Translocation program.
 
-# Laura Keating and Alyssa Friesen
+# Started by Laura Keating and Alyssa Friesen
 # Last update: July 27, 2021
 
-#Dylan Cole
-#Began September 7, 2021
-#Incorporating code written by Laura Keating and Alyssa Friesen 
+# Continued by Dylan Cole
+# Started September 7, 2021
 
+# Users will run the code contained within this wrapped script
 
-### Clear the workspace.  
+### Clear the workspace  
 rm(list = ls())
 
 ### Load libraries
@@ -22,12 +22,12 @@ library(data.table)
 library(gtable)
 library(gridExtra)
 
-
 ########## Analysis setup ##########
 
 ### Specify the input csv spreadsheet 
 inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v4.csv")
-#Adjust any names/labels
+
+### Adjust any names/labels within inputs
 inputs$species<-gsub(" (caurina subspecies)","", inputs$species, fixed=TRUE)
 inputs$name<-gsub(" (caurina subspecies)_","_", inputs$name, fixed=TRUE)
 
@@ -52,7 +52,7 @@ conservation_breeding <-c("Banff Springs Snail", "Woodland Caribou","Boreal Felt
                           "Spotted Owl", "Taylor's Checkerspot", 
                           "Whitebark pine")
 
-### Specify epsilon value if using functions 7 or 8 (see below)
+### Specify epsilon value if using functions 5 or 6 (see below)
 epsilon <- 0.0375
 
 ### Identify the program names from imported CSV
@@ -70,7 +70,7 @@ org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
   # 5) cba_GplusD_CurrentGS_epsilon
   # 6) cba_GplusD_LongTermPot_CurrentGS_epsilon
 
-results_full_analysis <-  newSpeciesPrioritization::cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs = org_programs, 
+results_full_analysis <-  newSpeciesPrioritization::cba_GplusD(org_programs = org_programs, 
                                                  inputs = inputs,
                                                  functional_score_max = functional_score_max)
                                         
@@ -109,8 +109,6 @@ clength<-max(length(results_ranking$rank), length(common_programs))
 length(common_programs)<-clength
 results_ranking<-cbind(results_ranking, common_programs)
 
-
-
 ########## Figures ##########
 
 ### Draw figures from figures function to show the results
@@ -120,11 +118,12 @@ figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_
 figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(results_BCR_national,results_BCR_global, inputs)
 figure_direction_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_directional_uncertainty(results_BCR_national, results_BCR_global, inputs)
 
-# Only use if performing binned analysis
+### Only use if performing binned analysis
+#for option 3
 figure_bincgain<-newSpeciesPrioritization::bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 figure_bincgain_scatternational<-newSpeciesPrioritization::scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
 figure_bincgain_scatterglobal<-newSpeciesPrioritization::scatter_bin_benefits_global(results_benefit_global, inputs, results_overall)
-
+#for option 4
 figure_bincurrentgs<-newSpeciesPrioritization::bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
 figure_bincurrentgs_scatternational<-newSpeciesPrioritization::scatter_bin_currentgs_national(results_overall,results_benefit_national)
 figure_bincurrentgs_scatterglobal<-newSpeciesPrioritization::scatter_bin_currentgs_global(results_overall,results_benefit_global)
@@ -212,7 +211,7 @@ for(i in 1:length(org_programs)){
 
 ########## Descriptive stats of data ##########
 
-##### Highest probability-weighted average change in persistence
+##### Highest benefit
 #National
 benefit_max_national<-max(results_benefit_national$mean)
 round(benefit_max_national, digits = 1)
@@ -223,7 +222,7 @@ benefit_max_global<-max(results_benefit_global$mean)
 round(benefit_max_global, digits = 1)
 benefits_max_global_program <- results_benefit_global$org_program[which(results_benefit_global$mean == benefit_max_global)]
 benefits_max_global_program
-##### Lowest change in persistence
+##### Lowest benefit
 #National 
 benefit_min_national<-min(results_benefit_national$mean)
 round(benefit_min_national, digits = 1)
@@ -234,11 +233,6 @@ benefit_min_global<-min(results_benefit_global$mean)
 round(benefit_min_global, digits = 1)
 benefit_min_global_program <- results_benefit_global$org_program[which(results_benefit_global$mean == benefit_min_global)]
 benefit_min_global_program
-#####Greatest change in endemic programs 
-
-# Still need to fix
-benefit_endemic<-results_benefit_national[which(results_benefit_national$org_program==endemic_species)]
-benefit_endemic_national<-max(results_benefit_national$mean[which(results_benefit_national$org_program==endemic_species)])
 
 #####Highest total cost
 cost_total_max <- max(results_cost_total$mean)
@@ -260,35 +254,4 @@ cost_organization_min <-min(results_cost_organization$mean)
 round(cost_organization_min, digits = 1)
 cost_organization_min_program <- results_cost_organization$org_program[which(results_cost_organization$mean==cost_organization_min)]
 cost_organization_min_program
-##### Cost to top 6?
 
-
-## Gather into DF for summary table
-descriptive_stats<-as.data.frame(matrix(nrow = 9, ncol = 3))
-colnames(descriptive_stats)<-c("Stat", "Program", "Value")
-descriptive_stats$Stat<-c("Highest National Benefit", "Highest Global Benefit",
-                               "Lowest National Benefit", "Lowest Global Benefit",
-                               "Highest Cost to Organization","Highest Total Cost",
-                               "Lowest Cost to Organization", "Lowest Total Cost",
-                               "Highest Benefit in Endemic Species")
-#Need to fix - currently if there is a tie (such as min national benefit) then it cant add to DF because its a vector
-descriptive_stats$Value[which(descriptive_stats$Stat=="Highest National Benefit")]<-benefit_max_national
-descriptive_stats$Program[which(descriptive_stats$Stat=="Highest National Benefit")]<-benefit_max_national_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Highest Global Benefit")]<-benefit_max_global
-descriptive_stats$Program[which(descriptive_stats$Stat=="Highest Global Benefit")]<-benefit_max_global_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Lowest National Benefit")]<-benefit_min_national
-descriptive_stats$Program[which(descriptive_stats$Stat=="Lowest National Benefit")]<-benefit_min_national_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Lowest Global Benefit")]<-benefit_min_global
-descriptive_stats$Program[which(descriptive_stats$Stat=="Lowest Global Benefit")]<-benefit_min_national_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Highest Cost to Organization")]<-cost_organization_max
-descriptive_stats$Program[which(descriptive_stats$Stat=="Highest Cost to Organization")]<-cost_organization_max_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Lowest Cost to Organization")]<-cost_organization_min
-descriptive_stats$Program[which(descriptive_stats$Stat=="Lowest Cost to Organization")]<-cost_organization_min_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Highest Total Cost")]<-cost_total_max
-descriptive_stats$Program[which(descriptive_stats$Stat=="Highest Total Cost")]<-cost_total_max_program
-descriptive_stats$Value[which(descriptive_stats$Stat=="Lowest Total Cost")]<-cost_total_min
-descriptive_stats$Program[which(descriptive_stats$Stat=="Lowest Total Cost")]<-cost_total_min_program
-
-
-filename <- "C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Results/Oct 28/descriptive_stats.csv"
-write.csv(descriptive_stats, filename, row.names = FALSE)

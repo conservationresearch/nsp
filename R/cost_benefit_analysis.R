@@ -1,9 +1,7 @@
-#This file contains the main cost-benefit functions 
-#Dylan Cole
-#September 2021
-#Incorporated code written by Laura Keating (July 2021)
-
-#####Cost Benefit Analysis #####
+# This script contains the main cost-benefit functions 
+# Dylan Cole
+# Started August 2021
+# Primarily using code written by Laura Keating (July 2021) with some changes and cleanup
 
 #### Benefit Options #####
 #Users are able to select different metrics to examine the cost/benefit effectiveness
@@ -55,13 +53,13 @@ cba_GplusD<-function(org_programs, inputs, functional_score_max){
   # will be the same as the national results
   results_benefit_global <- results_BCR_national
   
-  # initialize something to hold all the simulated inputs for sensitivity 
+  # initialize list to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
   dat_list <- list() 
   
   ##### Main Simulation #####
   for (i in 1:length(org_programs)) {
-    # Identify which program we are doing now
+    # Identify current program name
     org_program <- as.character(org_programs[i])
     print(paste("Running cba_GplusD simulation for", org_program))
     
@@ -73,49 +71,18 @@ cba_GplusD<-function(org_programs, inputs, functional_score_max){
     
     ######## Calculate the national benefit for each iteration ########
     
-    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
     dat$GS_Benefit_national <- dat$GSGainPlusDependence
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$OrgBenefit
     
-    ######## OLD - Calculate the global benefit for each iteration ########
-    
-    # Calculate what the assessed denominator is
-    #GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-    
-    # Calculate what the assessed numerator is
-    #GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
-    
-    # Calculate how many spatial units would be in the larger scale if they are
-    # proportional to the smaller scale and the range
-    #n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-    
-    # Calculate what the scaled denominator is
-    #GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-    
-    # Calculate new value for scaled global
-    #dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
-    
-    # Relabelling for consistency
-    #dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence
-    
-    # Adjust the global benefit of the organization's program to reflect the organization portion by
-    # multiplying the organizations global benefit vector by the vector with the percent
-    # contribution from the organization. The result is the organization's global benefit of
-    # the program.
-    
-    #dat$benefit_global_org <- dat$GS_Benefit_global * dat$OrgBenefit
-    
-    ######## NEW - Calculate the global benefit for each iteration ########
+    ######## Calculate the global benefit for each iteration ########
     
     dat$benefit_global_org <- dat$benefit_national_org * dat$species_range_pct_in_nation/100
     
     ######## Calculate the costs ########
-    
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
+
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
@@ -254,7 +221,7 @@ cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max){
   # will be the same as the national results
   results_benefit_global <- results_BCR_national
   
-  # initialize something to hold all the simulated inputs for sensitivity 
+  # initialize list to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
   dat_list <- list() 
   for (i in 1:length(org_programs)) {
@@ -270,49 +237,18 @@ cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max){
     
     ######## Calculate the national benefit for each iteration ########
     
-    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
     dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermAspiration * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$OrgBenefit
     
-    ######## OLD - Calculate the global benefit for each iteration ########
-    
-    # Calculate what the assessed denominator is
-    #GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-    
-    # Calculate what the assessed numerator is
-    #GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
-    
-    # Calculate how many spatial units would be in the larger scale if they are
-    # proportional to the smaller scale and the range
-    #n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-    
-    # Calculate what the scaled denominator is
-    #GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-    
-    # Calculate new value for scaled global
-    #dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
-    
-    # Rescaling to long term potential
-    #dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence / dat$GSlongtermAspiration * 100
-    
-    # Adjust the global benefit of the organization's program to reflect the organization portion by
-    # multiplying the organizations global benefit vector by the vector with the percent
-    # contribution from the organization. The result is the organization's global benefit of
-    # the program.
-    
-    #dat$benefit_global_org <- dat$GS_Benefit_global * dat$OrgBenefit
-    
-    ######## NEW - Calculate the global benefit for each iteration ########
+    ######## Calculate the global benefit for each iteration ########
     
     dat$benefit_global_org <- dat$benefit_national_org * dat$species_range_pct_in_nation/100
     
     ######## Calculate the costs ########
-    
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
+
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
@@ -451,7 +387,7 @@ cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_ma
   # will be the same as the national results
   results_benefit_global <- results_BCR_national
   
-  # initialize something to hold all the simulated inputs for sensitivity 
+  # initialize list to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
   dat_list <- list() 
   for (i in 1:length(org_programs)) {
@@ -467,49 +403,18 @@ cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_ma
     
     ######## Calculate the national benefit for each iteration ########
     
-    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
     dat$GS_Benefit_national <- dat$GSGainPlusDependence
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$OrgBenefit
     
-    ######## OLD - Calculate the global benefit for each iteration ########
-    
-    # Calculate what the assessed denominator is
-    #GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-    
-    # Calculate what the assessed numerator is
-    #GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
-    
-    # Calculate how many spatial units would be in the larger scale if they are
-    # proportional to the smaller scale and the range
-    #n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-    
-    # Calculate what the scaled denominator is
-    #GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-    
-    # Calculate new value for scaled global
-    #dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
-    
-    # Relabelling for consistency
-    #dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence
-    
-    # Adjust the global benefit of the organization's program to reflect the organization portion by
-    # multiplying the organizations global benefit vector by the vector with the percent
-    # contribution from the organization. The result is the organization's global benefit of
-    # the program.
-    
-    #dat$benefit_global_org <- dat$GS_Benefit_global * dat$OrgBenefit
-    
-    ######## NEW - Calculate the global benefit for each iteration ########
+    ######## Calculate the global benefit for each iteration ########
     
     dat$benefit_global_org <- dat$benefit_national_org * dat$species_range_pct_in_nation/100
     
     ######## Calculate the costs ########
-    
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
+
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
@@ -628,7 +533,6 @@ cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_ma
       results_overall$bin_cgainGlobal[which(results_overall$org_program==org_program)]<- 4
     }
     
-    
   }
   
   #Ranking of programs first by bin then by BCR
@@ -710,7 +614,7 @@ cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_sco
   results_overall$mean_GScurrentNational <- NA
   results_overall$mean_GScurrentGlobal <- NA
   
-  # initialize something to hold all the simulated inputs for sensitivity 
+  # initialize list to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
   dat_list <- list() 
   for (i in 1:length(org_programs)) {
@@ -726,49 +630,18 @@ cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_sco
     
     ######## Calculate the national benefit for each iteration ########
     
-    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
     dat$GS_Benefit_national <- dat$GSGainPlusDependence / dat$GSlongtermAspiration * 100
     
     dat$benefit_national_org <-  dat$GS_Benefit_national * dat$OrgBenefit
-    
-    ######## Calculate the global benefit for each iteration ########
-    
-    # Calculate what the assessed denominator is
-    #GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-    
-    # Calculate what the assessed numerator is
-    #GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
-    
-    # Calculate how many spatial units would be in the larger scale if they are
-    # proportional to the smaller scale and the range
-    #n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-    
-    # Calculate what the scaled denominator is
-    #GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-    
-    # Calculate new value for scaled global
-    #dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
-    
-    # Rescaling to long term potential
-    #dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence / dat$GSlongtermAspiration * 100
-    
-    # Adjust the global benefit of the organization's program to reflect the organization portion by
-    # multiplying the organizations global benefit vector by the vector with the percent
-    # contribution from the organization. The result is the organization's global benefit of
-    # the program.
-    
-    #dat$benefit_global_org <- dat$GS_Benefit_global * dat$OrgBenefit
-    
-    ######## NEW - Calculate the global benefit for each iteration ########
+   
+    ########  Calculate the global benefit for each iteration ########
     
     dat$benefit_global_org <- dat$benefit_national_org * dat$species_range_pct_in_nation/100
     
     ######## Calculate the costs ########
-    
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
+
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
@@ -966,7 +839,7 @@ cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_ma
   # will be the same as the national results
   results_benefit_global <- results_BCR_national
   
-  # initialize something to hold all the simulated inputs for sensitivity 
+  # initialize list to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
   dat_list <- list() 
   for (i in 1:length(org_programs)) {
@@ -982,7 +855,6 @@ cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_ma
     
     ######## Calculate the national benefit for each iteration ########
     
-    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate organization portion of the benefit
     
     # Adding epsilon to account for extirpated species 
@@ -992,40 +864,10 @@ cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_ma
     
     ######## Calculate the global benefit for each iteration ########
     
-    # Calculate what the assessed denominator is
-    #GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-    
-    # Calculate what the assessed numerator is
-    #GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
-    
-    # Calculate how many spatial units would be in the larger scale if they are
-    # proportional to the smaller scale and the range
-    #n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-    
-    # Calculate what the scaled denominator is
-    #GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-    
-    # Calculate new value for scaled global
-    #dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
-    
-    # Calcuate global benefit relative to current global GS (adding 0.1 for extirpated species)
-    #dat$GS_Benefit_global <- dat$GSGlobalGainPlusDependence / (dat$GScurrentGlobal + epsilon) 
-    
-    # Adjust the global benefit of the organization's program to reflect the organization portion by
-    # multiplying the organizations global benefit vector by the vector with the percent
-    # contribution from the organization. The result is the organization's global benefit of
-    # the program.
-    
-    #dat$benefit_global_org <- dat$GS_Benefit_global * dat$OrgBenefit
-    
-    ######## NEW - Calculate the global benefit for each iteration ########
-    
     dat$benefit_global_org <- dat$benefit_national_org * dat$species_range_pct_in_nation/100
     
     ######## Calculate the costs ########
     
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
@@ -1164,12 +1006,9 @@ cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functio
   # will be the same as the national results
   results_benefit_global <- results_BCR_national
   
-  # initialize something to hold all the simulated inputs for sensitivity 
+  # initialize list to hold all the simulated inputs for sensitivity 
   # and the results too if needed for each program
   dat_list <- list() 
-  
-  #TESTING TESTING
-  
   
   #####Main Simulation #####
   for (i in 1:length(org_programs)) {
@@ -1185,49 +1024,18 @@ cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functio
     
     ######## Calculate the national benefit for each iteration ########
     
-    # G relative to dynamic baseline done in the pre-work, for clarity may want to pull out TO DO
     # Calculate our portion of the benefit
     
     dat$GS_Benefit_national <- (dat$GSGainPlusDependence / dat$GSlongtermAspiration) * 100
     
-    dat$benefit_national_org <-  (dat$GS_Benefit_national * dat$OrgBenefit) / (dat$GScurrentNational + epsilon)
-    
-    ######## Calculate the global benefit for each iteration ########
-    
-    # Calculate what the assessed denominator is
-    #GS_denominator_assessed <- dat$GSnSpatialUnits * functional_score_max
-    
-    # Calculate what the assessed numerator is
-    #GS_numerator_assessed <- dat$GSGainPlusDependence * GS_denominator_assessed/100
-    
-    # Calculate how many spatial units would be in the larger scale if they are
-    # proportional to the smaller scale and the range
-    #n_spatial_units_scaled <-  dat$GSnSpatialUnits / (dat$species_range_pct_in_nation/100)
-    
-    # Calculate what the scaled denominator is
-    #GS_denominator_scaled <- functional_score_max * n_spatial_units_scaled
-    
-    # Calculate new value for scaled global
-    #dat$GSGlobalGainPlusDependence <- GS_numerator_assessed / GS_denominator_scaled * 100
-    
-    # Rescaling to long term potential and current global GS plus epsilon
-    #dat$GS_Benefit_global <- (dat$GSGlobalGainPlusDependence / dat$GSlongtermAspiration) * 100 
-    
-    # Adjust the global benefit of the organization's program to reflect the organization portion by
-    # multiplying the organizations global benefit vector by the vector with the percent
-    # contribution from the organization. The result is the organization's global benefit of
-    # the program. Followed by rescaling to currentGS plus epsilon
-    
-    #dat$benefit_global_org <- (dat$GS_Benefit_global * dat$OrgBenefit) / (dat$GScurrentGlobal + epsilon)
-
+    dat$benefit_national_org <- (dat$GS_Benefit_national * dat$OrgBenefit) / (dat$GScurrentNational + epsilon)
+ 
     ######## NEW - Calculate the global benefit for each iteration ########
     
     dat$benefit_global_org <- dat$benefit_national_org * dat$species_range_pct_in_nation/100
     
     ######## Calculate the costs ########
-    
-    # Note: this is currently done as prework in the paramater draws function
-    # But might be clearer if pull it out and put here
+
     # Calculate the maximum amount of external funding that our
     # organization will accept (i.e. multiply the maximum funding proportion
     # of total cost with the total project cost).
