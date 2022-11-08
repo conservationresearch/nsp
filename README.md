@@ -11,7 +11,7 @@ costs and extend these to a global scale. Therefore, users must also supply a lo
 interest, and the probabilities of those ranges (probabilities must add to 100). A user must also supply the P5, P50, and P95 for two additional metrics not 
 associated with any specific project, the "General and Administrative" and a "Mandatory Organization Contribution", both of which are percents of total costs.
 
-This cost benefit analysis then takes the input csv and builds a metalog distribution using the P5, P50, and P95 for each benefit and cost metric. A Monte Carlo
+This cost benefit analysis uses the input csv file and builds a metalog distribution using the P5, P50, and P95 for each benefit and cost metric. A Monte Carlo
 simulation then samples a user-specified number of values from that distribution into a single vector. The mean of these values for each metric can then be used
 in the cost-benefit analysis. The benefits are then divided by the cost to give the benefit cost ratio (BCRs) for each project, and these ratios are what the package then ranks. Higher ranking projects would maximize the benefit and minimize cost. 
 
@@ -20,10 +20,6 @@ able to reflect their beliefs in how they perform the analysis. Option 1, the si
 metric. Option 2 builds upon Option 1 quantifies benefits as Conservation Gain Plus Dependence, relative to Long Term Aspiration metric. Option 3 performs the same
 calculations as Option 1, however, before ranking the BCRs it bins the conservation projects based on the total benefits. Projects with higher total gain, regardless
 of cost, are given priority. Option 4 performs the same calculations as Option 2, however, before ranking the BCRs it bins the conservation projects based on their
-Current Green Score. Projects that have a lower Current Green Score are given priority. Option 5 quantifies the benfit as the Conservation Gain plus Conservation
-Dependence, relative to Current Green Score plus Epsilon. Option 6 quantifies the benefit as the Conservation Gain Plus Conservation Dependence, relative to 
-Long Term Aspiration, and relative to the Current Green Score plus Epsilon. Epsilon is a subjective term that is added to deal with Species that have a Current
-Green Score of zero (extirpated), thus avoiding dividing by zero. 
+Current Green Score. Projects that have a lower Current Green Score are given priority giving priority to species that are more at risk. Option 5 calculates the benfit as the Conservation Gain plus Conservation Dependence, relative to Current Green Score plus epsilon. Option 6 quantifies the benefit as the Conservation Gain Plus Conservation Dependence, relative to Long Term Aspiration, and relative to the Current Green Score plus epsilon. Epsilon is a subjective term that is included to resolve the problem of dividing by zero in Species that have a Current Green Score of zero (extirpated). 
 
-To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation,
-and sensitivty analysis. 
+To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation, and sensitivty analysis. 
