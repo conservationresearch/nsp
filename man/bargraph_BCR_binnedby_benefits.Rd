@@ -29,5 +29,4 @@ national and global benefits, giving priority to those that have the highest ben
 }
 \examples{
 bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
-
 }

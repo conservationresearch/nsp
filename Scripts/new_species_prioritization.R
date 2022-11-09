@@ -36,11 +36,11 @@ number_of_simulations <- 10000
 set.seed(123) # to ensure the same set of random numbers each time
 
 ### Specify what the max score is for functional
-functional_score_max <- 10 # 10 if using the fine-scale weights
+functional_score_max <- 10 # 10 if using the fine-scale weights, 9 otherwise
 
 ### Specify number of species of interest
-top_species <- 10 #For table of ranked species
-rank_cutoff <- 6 #For sensitivity analysis
+top_species <- 10 #For table of ranked species, limits to a smaller pool of highly ranked projects
+rank_cutoff <- 6 #For sensitivity analysis, number of projects that the organization is wanting to examine
 
 ### Specify endemic species, needed for descriptive stats
 endemic_species <- c("Banff Springs Snail","Maritime Ringlet","Atlantic whitefish")
@@ -53,7 +53,7 @@ conservation_breeding <-c("Banff Springs Snail", "Woodland Caribou","Boreal Felt
                           "Whitebark pine")
 
 ### Specify epsilon value if using functions 5 or 6 (see below)
-epsilon <- 0.0375
+epsilon <- 0.0375 
 
 ### Identify the program names from imported CSV
 org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
@@ -93,12 +93,12 @@ colnames(results_ranking) <- c("rank","national_level", "global_level",
 results_ranking$rank<-c(1:top_species)
 
 #Arrange data by national rank, extract specified # of top national species and associated BCR into new dataframe
-results_overall<-results_overall %>% dplyr::arrange(BCR_national_EV_rank)
+results_overall<-dplyr::arrange(results_overall, BCR_national_EV_rank)
 results_ranking$national_level<-results_overall$org_program[which(results_overall$BCR_national_EV_rank<=top_species)]
 results_ranking$BCR_national<-results_overall$BCR_national_EV[which(results_overall$BCR_national_EV_rank<=top_species)]
 
 #Arrange data by global rank, extract specified # of top global species and associated BCR into new dataframe
-results_overall<-results_overall %>% dplyr::arrange(BCR_global_EV_rank)
+results_overall<-dplyr::arrange(results_overall, BCR_global_EV_rank)
 results_ranking$global_level<-results_overall$org_program[which(results_overall$BCR_global_EV_rank<=top_species)]
 results_ranking$BCR_global<-results_overall$BCR_global_EV[which(results_overall$BCR_global_EV_rank<=top_species)]
 

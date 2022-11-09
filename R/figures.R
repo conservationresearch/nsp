@@ -24,8 +24,8 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
   sim_results_summary_benefits <- rbind(results_benefit_national,results_benefit_global)
   
   ## Create a data frame to identify species that are endemic
-  sim_results_summary_benefits <- sim_results_summary_benefits %>%
-    dplyr::mutate(lab = dplyr::if_else(org_program %in% endemic_species, "*", ""))
+  sim_results_summary_benefits$lab <- ifelse(sim_results_summary_benefits$org_program %in% endemic_species, "*","")
+  
   # remove the factor levels
   results_benefit_global$org_program <- as.character(results_benefit_global$org_program) 
   # order by decreasing national benefit
@@ -104,7 +104,7 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
 
 
 ##### Graphing the costs  #####
-#' Figure of costs to organization and financial leverage
+#' Figure costs to organization and financial leverage
 #' 
 #' This function creates a figure depicting the costs to the organization and the financial leverage for each conservation program. Programs
 #' with a current Green Score of zero are presented on a separate facet. 
@@ -125,8 +125,9 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   sim_results_summary_costs <- rbind(results_cost_organization, results_cost_total)
   
   ## Create a data frame to identify species that are conservation breeding relevant
-  sim_results_summary_costs <- sim_results_summary_costs %>%
-    dplyr::mutate(lab = dplyr::if_else(Category == "Cost-sharing Potential" & org_program %in% conservation_breeding, "    B", ""))
+  sim_results_summary_costs$lab <- ifelse(sim_results_summary_costs$Category == "Cost-sharing Potential" &
+                                            sim_results_summary_costs$org_program %in% conservation_breeding,
+                                          "    B", "")
   # remove the factor levels
   results_benefit_global$org_program <- as.character(results_benefit_global$org_program)
   
@@ -216,7 +217,6 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
 #' @return Returns the figure produced
 #' @examples
 #' bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
-#'
 #' @export
 
 bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_global, inputs, results_overall){
@@ -229,9 +229,8 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
   results_BCR_global$Bin[match(results_BCR_global$org_program, results_overall$org_program)]<-results_overall$bin_cgainGlobal
   sim_results_summary_bincgain<-rbind(results_BCR_national, results_BCR_global)
   #Add label for endemic species
-  sim_results_summary_bincgain <- sim_results_summary_bincgain %>%
-    dplyr::mutate(lab = dplyr::if_else(org_program %in% endemic_species, "*", ""))
-  # remove the factor levels
+  sim_results_summary_bincgain$lab <- ifelse(sim_results_summary_bincgain$org_program %in% endemic_species, "*","")
+  #Remove the factor levels
   results_benefit_global$org_program <- as.character(results_benefit_global$org_program) 
   #Add numeric bin for reorder
   sim_results_summary_bincgain$bin_numeric<-NA
@@ -251,7 +250,6 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
                                                        )]), ordered=TRUE)
 
   #Make the graph
-  #
   bin_cgains_bargraph <- ggplot2::ggplot(sim_results_summary_bincgain, ggplot2::aes(y = org_program, x=mean*100000, fill = Category, color = Bin)) +
     ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
     ggplot2::geom_text(ggplot2::aes(label = lab, color="black"), color="black", show.legend = FALSE,vjust=0.70, hjust=0.1,size = 10) +
@@ -260,12 +258,9 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
                                          "Medium" = "darkorange",
                                          "Low" = "blue",
                                          "Zero" = "green"))+
-    #ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(xmin = P5, xmax = P95), width = 0.1, color = "black") +
     ggplot2::labs(x = "Mean BCR (species program value per 100 000 CAD)",
                   y = "Species program",
                   title="a")+
-    #title="C")                         
-    #ggplot2::labs(alpha = "category", fill = "category", ggplot2::aes(color="black")) +
     ggplot2::theme_bw() +
     ggplot2::theme(plot.title = ggplot2::element_text(size=20),
                   axis.text = ggplot2::element_text(size=16),
@@ -276,7 +271,6 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
                    legend.position = c(0.95,0.50),
                    panel.grid.major = ggplot2::element_blank(),
                    panel.grid.minor = ggplot2::element_blank())+
-    #ggplot2::guides(override.aes=ggplot2::aes(label=""))+
     ggplot2::theme(legend.key.size=unit(0.5, "cm"))
   
   print(bin_cgains_bargraph)
@@ -427,8 +421,7 @@ bargraph_binnedby_currentgs<-function(results_BCR_global, results_BCR_national, 
   results_BCR_global$Bin[match(results_BCR_global$org_program, results_overall$org_program)]<-results_overall$bin_GScurrentGlobal
   sim_results_summary_bincurrentgs<-rbind(results_BCR_national,results_BCR_global)
   #Add label for endemic species
-  sim_results_summary_bincurrentgs <- sim_results_summary_bincurrentgs %>%
-    dplyr::mutate(lab = dplyr::if_else(org_program %in% endemic_species, "*", ""))
+  sim_results_summary_bincurrentgs$lab <- ifelse(sim_results_summary_bincurrentgs$org_program %in% endemic_species, "*","")
   #Remove the factor levels
   results_benefit_global$org_program <- as.character(results_benefit_global$org_program) 
   #Add group numbers based on Current Green Score bin
@@ -628,9 +621,8 @@ graph_BCR <- function(results_BCR_national,results_BCR_global){
   results_BCR_global$Category <- "Global"
   results_BCR_national$Category <- "National"
   results_BCR_all <- rbind(results_BCR_national, results_BCR_global)
-  results_BCR_all <- results_BCR_all %>%
-    dplyr::mutate(lab = dplyr::if_else(org_program %in% endemic_species, " *", ""))
-  
+  #Label endemics
+  results_BCR_all$lab <- ifelse(results_BCR_all$org_program %in% endemic_species, " *", "")
   # Identify extirpated or extinct in the wild species
   species_extirpated_national <- inputs$species[which(inputs$subcategory=="GScurrentNational" & inputs$baseP50==0)]
   species_extinct_global <- inputs$species[which(inputs$subcategory=="GScurrentGlobal" & inputs$baseP50==0)]
@@ -724,11 +716,10 @@ graph_BCR_uncertainty <- function(results_BCR_national,results_BCR_global, input
   #calculate the CI90 for each mean at national and global levels
   cred_intervals <- rbind(results_BCR_national,results_BCR_global)
   cred_intervals$ci90<-as.numeric(cred_intervals$P95)-as.numeric(cred_intervals$P5)
-  cred_intervals <- cred_intervals %>%
-    dplyr::mutate(lab = dplyr::if_else(org_program %in% endemic_species, "*", ""))
+  #label endemic
+  cred_intervals$lab <- ifelse(cred_intervals$org_program %in% endemic_species, "*","")
   
   #Prepping the extinct vs extant for the facet panelling 
-  
   species_extirpated_national <- inputs$species[which(inputs$subcategory=="GScurrentNational" & inputs$baseP50==0)]
   species_extinct_global <- inputs$species[which(inputs$subcategory=="GScurrentGlobal" & inputs$baseP50==0)]
   extirpated_or_extinct <- c(species_extirpated_national, species_extinct_global)
