@@ -104,7 +104,7 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
 
 
 ##### Graphing the costs  #####
-#' Figure costs to organization and financial leverage
+#' Figure of costs to organization and financial leverage
 #' 
 #' This function creates a figure depicting the costs to the organization and the financial leverage for each conservation program. Programs
 #' with a current Green Score of zero are presented on a separate facet. 
@@ -204,6 +204,7 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
   
 }#end of the graph_cost function
 
+
 ##### Bar graph of the BCR binned by conservation benefits - ONLY APPLICABLE IF USING BINNED ANALYSIS METHOD #####
 #' Bar graph of the BCR binned based on benefits
 #'
@@ -302,7 +303,7 @@ scatter_bin_benefits_national<-function(results_benefit_national, inputs, result
   results_benefit_national$bin_cgainNational[match(results_benefit_national$org_program,results_overall$org_program)]<-results_overall$bin_cgainNational
   
   #Make the figure for national level, labeling only those with high benefit
-  bin_cgains_scatter_national<-ggplot2::ggplot(results_benefit_national,aes(x=mean_GScurrentNational, y=mean_cgain_national_org,label=org_program))+
+  bin_cgains_scatter_national<-ggplot2::ggplot(results_benefit_national,ggplot2::aes(x=mean_GScurrentNational, y=mean_cgain_national_org,label=org_program))+
     ggplot2::aes(ymin=0, ymax=100, xmin=0, xmax=100)+
     ggplot2::theme_bw()+
     ggplot2::geom_point(color=dplyr::case_when(results_benefit_national$bin_cgainNational=="High"~"red",
@@ -311,15 +312,15 @@ scatter_bin_benefits_national<-function(results_benefit_national, inputs, result
                                                results_benefit_national$bin_cgainNational=="Zero"~"black"))+
     ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +
     ggrepel::geom_text_repel(data=subset(results_benefit_national,bin_cgainNational=="High"), size=5) +
-    ggplot2::geom_segment(aes(x=0, y=0, xend=40, yend=40), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=10, y=10, xend=90, yend=10), color="black",linetype=2) +
-    ggplot2::geom_segment(aes(x=40, y=40, xend=60, yend=40), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=0, y=100, xend=100, yend=0), color="black",linetype=2) +
-    ggplot2::geom_segment(aes(x=0, y=0, xend=100, yend=0), color="black",linetype=2)+
-    ggplot2::geom_text(aes(x=5, y=90, label="High"), color="red", size=6) +
-    ggplot2::geom_text(aes(x=50, y=38, label="Medium"), color="darkorange", size=6) +
-    ggplot2::geom_text(aes(x=50,y=8, label="Low"), color="green", size=6) +
-    ggplot2::geom_text(aes(x=85,y=2, label="Zero"), color="black",size=6) +
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=40, yend=40), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=10, y=10, xend=90, yend=10), color="black",linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=40, y=40, xend=60, yend=40), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=100, xend=100, yend=0), color="black",linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=100, yend=0), color="black",linetype=2)+
+    ggplot2::geom_text(ggplot2::aes(x=5, y=90, label="High"), color="red", size=6) +
+    ggplot2::geom_text(ggplot2::aes(x=50, y=38, label="Medium"), color="darkorange", size=6) +
+    ggplot2::geom_text(ggplot2::aes(x=50,y=8, label="Low"), color="green", size=6) +
+    ggplot2::geom_text(ggplot2::aes(x=85,y=2, label="Zero"), color="black",size=6) +
     ggplot2::theme(plot.title = ggplot2::element_text(size=20),
                   axis.title=ggplot2::element_text(size=16),
                    axis.text=ggplot2::element_text(size=16),
@@ -361,22 +362,22 @@ scatter_bin_benefits_global<-function(results_benefit_global, inputs, results_ov
   results_benefit_global$bin_cgainGlobal[match(results_benefit_global$org_program,results_overall$org_program)]<-results_overall$bin_cgainGlobal
   
   #Make the graph for global level, labeling only those with high benefit
-  bin_cgains_scatter_global<-ggplot2::ggplot(results_benefit_global,aes(x=mean_GScurrentGlobal, y=mean_cgain_global_org, label=org_program))+
+  bin_cgains_scatter_global<-ggplot2::ggplot(results_benefit_global,ggplot2::aes(x=mean_GScurrentGlobal, y=mean_cgain_global_org, label=org_program))+
     ggplot2::aes(ymin=0, ymax=100, xmin=0, xmax=100)+
     ggplot2::theme_bw()+
     ggplot2::geom_point(color=dplyr::case_when(results_benefit_global$bin_cgainGlobal=="High"~"red",
                                                results_benefit_global$bin_cgainGlobal=="Medium"~"darkorange",
                                                results_benefit_global$bin_cgainGlobal=="Low"~"green",
                                                results_benefit_global$bin_cgainGlobal=="Zero"~"black"))+
-    ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +    ggplot2::geom_segment(aes(x=0, y=0, xend=40, yend=40), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=10, y=10, xend=90, yend=10), color="black",linetype=2) +
-    ggplot2::geom_segment(aes(x=40, y=40, xend=60, yend=40), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=0, y=100, xend=100, yend=0), color="black",linetype=2) +
-    ggplot2::geom_segment(aes(x=0, y=0, xend=100, yend=0), color="black",linetype=2)+
-    ggplot2::geom_text(aes(x=5, y=90, label="High"), color="red", size=6) +
-    ggplot2::geom_text(aes(x=50, y=38, label="Medium"), color="darkorange", size=6) +
-    ggplot2::geom_text(aes(x=50, y=8, label="Low"), color="green", size=6) +
-    ggplot2::geom_text(aes(x=85, y=2, label="Zero"), color="black", size=6) +
+    ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +    ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=40, yend=40), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=10, y=10, xend=90, yend=10), color="black",linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=40, y=40, xend=60, yend=40), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=100, xend=100, yend=0), color="black",linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=100, yend=0), color="black",linetype=2)+
+    ggplot2::geom_text(ggplot2::aes(x=5, y=90, label="High"), color="red", size=6) +
+    ggplot2::geom_text(ggplot2::aes(x=50, y=38, label="Medium"), color="darkorange", size=6) +
+    ggplot2::geom_text(ggplot2::aes(x=50, y=8, label="Low"), color="green", size=6) +
+    ggplot2::geom_text(ggplot2::aes(x=85, y=2, label="Zero"), color="black", size=6) +
     ggplot2::theme(plot.title = ggplot2::element_text(size=20),
                   axis.title=ggplot2::element_text(size=16),
                    axis.text=ggplot2::element_text(size=16),
@@ -496,7 +497,7 @@ scatter_bin_currentgs_national<-function(results_overall,results_benefit_nationa
   results_benefit_national$bin_GScurrentNational[match(results_benefit_national$org_program,results_overall$org_program)]<-results_overall$bin_GScurrentNational
   
   #Make the graph for national level, labeling only those extinct or critically depleted
-  bin_currentgs_scatter_national<-ggplot2::ggplot(results_benefit_national,aes(x=mean_GScurrentNational, y=mean_cgain_national_org, label=org_program))+
+  bin_currentgs_scatter_national<-ggplot2::ggplot(results_benefit_national,ggplot2::aes(x=mean_GScurrentNational, y=mean_cgain_national_org, label=org_program))+
     ggplot2::scale_y_continuous(limits=c(0,100))+
     ggplot2::scale_x_continuous(limits=c(0,100))+                              
     ggplot2::theme_bw()+
@@ -509,17 +510,17 @@ scatter_bin_currentgs_national<-function(results_overall,results_benefit_nationa
     ggplot2::geom_errorbar(ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +
     ggrepel::geom_text_repel(data=subset(results_benefit_national, mean_GScurrentNational<= 15 ),
                             box.padding=0.5, point.padding = 0.75, min.segment.length = 1, force=2, direction="both")+
-    ggplot2::geom_segment(aes(x=0, y=0, xend=0, yend=100), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=20, y=0, xend=20, yend=100), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=50, y=0, xend=50, yend=100), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=80, y=0, xend=80, yend=100), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=100, y=0, xend=100, yend=100), color="black",linetype=2)+
-    ggplot2::geom_text(aes(x=0, y=90, label="Extinct in\nthe Wild"), color="red",size=4) +
-    ggplot2::geom_text(aes(x=10,y=90, label="Critically \nDepleted"), color="orange", size=4) +
-    ggplot2::geom_text(aes(x=35,y=90, label="Largely \nDepleted"), color="purple", size=4) +
-    ggplot2::geom_text(aes(x=65,y=90, label="Moderately \nDepleted"), color="green",size=4) +
-    ggplot2::geom_text(aes(x=90,y=90, label="Slightly \nDepleted"), color="blue",size=4) +
-    ggplot2::geom_text(aes(x=100,y=90, label="Fully \nRecovered"), color="black",size=4) +
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=0, yend=100), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=20, y=0, xend=20, yend=100), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=50, y=0, xend=50, yend=100), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=80, y=0, xend=80, yend=100), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=100, y=0, xend=100, yend=100), color="black",linetype=2)+
+    ggplot2::geom_text(ggplot2::aes(x=0, y=90, label="Extinct in\nthe Wild"), color="red",size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=10,y=90, label="Critically \nDepleted"), color="orange", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=35,y=90, label="Largely \nDepleted"), color="purple", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=65,y=90, label="Moderately \nDepleted"), color="green",size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=90,y=90, label="Slightly \nDepleted"), color="blue",size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=100,y=90, label="Fully \nRecovered"), color="black",size=4) +
     ggplot2::theme(plot.title = ggplot2::element_text(size=20),
                   axis.title=ggplot2::element_text(size=16),
                    axis.text=ggplot2::element_text(size=16),
@@ -560,7 +561,7 @@ scatter_bin_currentgs_global<-function(results_overall,results_benefit_global){
   results_benefit_global$bin_GScurrentGlobal[match(results_benefit_global$org_program, results_overall$org_program)]<-results_overall$bin_GScurrentGlobal
   
   #Make the figure for global level, labeling only those binned as Extinct or Critically Depleted
-  bin_currentgs_scatter_global<-ggplot2::ggplot(results_benefit_global,aes(x=mean_GScurrentGlobal, y=mean_cgain_global_org, label=org_program))+
+  bin_currentgs_scatter_global<-ggplot2::ggplot(results_benefit_global,ggplot2::aes(x=mean_GScurrentGlobal, y=mean_cgain_global_org, label=org_program))+
     ggplot2::scale_y_continuous(limits=c(0,100))+
     ggplot2::scale_x_continuous(limits=c(0,100))+                              
     ggplot2::theme_bw()+
@@ -570,21 +571,21 @@ scatter_bin_currentgs_global<-function(results_overall,results_benefit_global){
                                                results_benefit_global$bin_GScurrentGlobal=="Moderately Depleted"~"green",
                                                results_benefit_global$bin_GScurrentGlobal=="Slightly Depleted"~"blue",
                                                results_benefit_global$bin_GScurrentGlobal=="Fully Recovered"~"black"))+
-    #ggrepel::geom_text_repel(aes(label=org_program),point.padding=0.5, box.padding=0.25)+
+    #ggrepel::geom_text_repel(ggplot2::aes(label=org_program),point.padding=0.5, box.padding=0.25)+
     ggplot2::geom_errorbar(position = ggplot2::position_dodge(width = 0.9), ggplot2::aes(ymin = P5, ymax = P95), width = 0.1, color = "black") +
     ggrepel::geom_text_repel(data=subset(results_benefit_global, bin_GScurrentGlobal=="Extinct in the Wild" | bin_GScurrentGlobal=="Critically Depleted"), 
-                             force=2,label.padding=0.5)+
-    ggplot2::geom_segment(aes(x=0, y=0, xend=0, yend=100), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=20, y=0, xend=20, yend=100), color="black",linetype=2) +
-    ggplot2::geom_segment(aes(x=50, y=0, xend=50, yend=100), color="black", linetype=2) +
-    ggplot2::geom_segment(aes(x=80, y=0, xend=80, yend=100), color="black",linetype=2) +
-    ggplot2::geom_segment(aes(x=100, y=0, xend=100, yend=100), color="black",linetype=2)+
-    ggplot2::geom_text(aes(x=0, y=90, label="Extinct in \nthe Wild"), color="red", size=4) +
-    ggplot2::geom_text(aes(x=10,y=90, label="Critically \nDepleted"), color="orange", size=4) +
-    ggplot2::geom_text(aes(x=35,y=90, label="Largely \nDepleted"), color="purple", size=4) +
-    ggplot2::geom_text(aes(x=65,y=90, label="Moderately \nDepleted"), color="green", size=4) +
-    ggplot2::geom_text(aes(x=90,y=90, label="Slightly \nDepleted"), color="blue", size=4) +
-    ggplot2::geom_text(aes(x=100,y=90, label="Fully \nRecovered"), color="black", size=4) +
+                             force=2)+
+    ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=0, yend=100), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=20, y=0, xend=20, yend=100), color="black",linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=50, y=0, xend=50, yend=100), color="black", linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=80, y=0, xend=80, yend=100), color="black",linetype=2) +
+    ggplot2::geom_segment(ggplot2::aes(x=100, y=0, xend=100, yend=100), color="black",linetype=2)+
+    ggplot2::geom_text(ggplot2::aes(x=0, y=90, label="Extinct in \nthe Wild"), color="red", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=10,y=90, label="Critically \nDepleted"), color="orange", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=35,y=90, label="Largely \nDepleted"), color="purple", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=65,y=90, label="Moderately \nDepleted"), color="green", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=90,y=90, label="Slightly \nDepleted"), color="blue", size=4) +
+    ggplot2::geom_text(ggplot2::aes(x=100,y=90, label="Fully \nRecovered"), color="black", size=4) +
     ggplot2::theme(plot.title = ggplot2::element_text(size=20),
                   axis.title=ggplot2::element_text(size=16),
                    axis.text=ggplot2::element_text(size=16),
@@ -825,7 +826,7 @@ graph_BCR_directional_uncertainty <- function(results_BCR_national,results_BCR_g
   #### Make figure 
   BCR_directional_credible_intervals<-  ggplot2::ggplot(temp_bcr, ggplot2::aes(y = org_program, x = centered_BCR_mean, alpha = Category)) + 
     ggplot2::geom_bar(stat="identity",position = ggplot2::position_dodge()) +
-    ggplot2::geom_errorbar(aes(xmin=centered_BCR_LCL*100000, xmax=centered_BCR_UCL*100000), width = 0.75, position = ggplot2::position_dodge2(width=0.9)) +
+    ggplot2::geom_errorbar(ggplot2::aes(xmin=centered_BCR_LCL*100000, xmax=centered_BCR_UCL*100000), width = 0.75, position = ggplot2::position_dodge2(width=0.9)) +
     ggplot2::facet_wrap(. ~ extirpated_or_extinct, scales="free", nrow=2, ncol=1) + 
     ggplot2::scale_alpha_manual(values=c(1,.3)) +
     ggplot2::geom_vline(xintercept = 0, lty="dashed") + 

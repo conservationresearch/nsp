@@ -21,6 +21,7 @@ library(rmetalog)
 library(data.table)
 library(gtable)
 library(gridExtra)
+library(grid)
 
 ########## Analysis setup ##########
 
@@ -83,7 +84,6 @@ results_benefit_global <- results_full_analysis[[5]]
 results_BCR_national <- results_full_analysis[[6]]
 results_BCR_global <- results_full_analysis[[7]]
 
-
 ########## Identifying and extracting list of top species ##########
 
 ### Pick top 5 from national and global respectively, check for overlap
@@ -127,7 +127,6 @@ figure_bincgain_scatterglobal<-newSpeciesPrioritization::scatter_bin_benefits_gl
 figure_bincurrentgs<-newSpeciesPrioritization::bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
 figure_bincurrentgs_scatternational<-newSpeciesPrioritization::scatter_bin_currentgs_national(results_overall,results_benefit_national)
 figure_bincurrentgs_scatterglobal<-newSpeciesPrioritization::scatter_bin_currentgs_global(results_overall,results_benefit_global)
-
 
 ########## Export tables and figures ##########
 
