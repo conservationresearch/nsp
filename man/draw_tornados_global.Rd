@@ -14,5 +14,5 @@ This function takes the output from the sensitivity analysis and creates tornado
 highlighting the effects that altering each parameter would have on the ranking of the programs.
 }
 \examples{
-draw_tornados_global(inputs_sens)
+# draw_tornados_global(inputs_sens)
 }

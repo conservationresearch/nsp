@@ -20,5 +20,5 @@ Returns the figure produced
 This function creates a bar graph of the national and global benefits with programs that have a current Green Score of zero on a separate facet.
 }
 \examples{
-graph_benefit(results_benefit_national, results_benefit_global, inputs)
+#graph_benefit(results_benefit_national, results_benefit_global, inputs)
 }

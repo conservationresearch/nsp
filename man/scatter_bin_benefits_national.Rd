@@ -25,5 +25,5 @@ This function can be used when the cost benefit analysis function cba_GplusD_Bin
 national benefits of each  program, binned into groups by the benefits they provide (high, medium, low, zero)
 }
 \examples{
-scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
+#scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
 }

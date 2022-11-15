@@ -24,5 +24,5 @@ lastly draws values from the distribution for each parameter. The number of valu
 "number_of_simulations"
 }
 \examples{
-parameter_prep(inputs,org_program, G_and_A_prop, number_of_simulations)
+# parameter_prep(inputs,org_program, G_and_A_prop, number_of_simulations)
 }

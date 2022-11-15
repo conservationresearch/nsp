@@ -28,5 +28,5 @@ This function can be used when the cost benefit analysis function cba_GplusD_Lon
 the national and global BCRs, binned into groups based on the current Green Score of each program at the national and global levels
 }
 \examples{
-bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
+#bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
 }

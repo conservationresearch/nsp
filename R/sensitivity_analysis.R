@@ -17,7 +17,7 @@
 #' @param rank_cutoff A value set by user to highlight their organization's number of conservation programs of interest
 #' @return Returns a dataframe of the recalculated values
 #' @examples
-#' sensitivity(org_programs, inputs, results_full_analysis, rank_cutoff)
+#' # sensitivity(org_programs, inputs, results_full_analysis, rank_cutoff)
 #' @export
 
 sensitivity <- function(org_programs, inputs, results_full_analysis, rank_cutoff){
@@ -182,7 +182,7 @@ sensitivity <- function(org_programs, inputs, results_full_analysis, rank_cutoff
 #'
 #' @param inputs_sens A dataframe generated from the sensitivity function
 #' @examples
-#' draw_tornados_national(inputs_sens)
+#' # draw_tornados_national(inputs_sens)
 #' @export
 
 draw_tornados_national <- function(inputs_sens){
@@ -317,7 +317,7 @@ draw_tornados_national <- function(inputs_sens){
 #'
 #' @param inputs_sens A dataframe generated from the sensitivity function
 #' @examples
-#' draw_tornados_global(inputs_sens)
+#' # draw_tornados_global(inputs_sens)
 #' @export
 
 draw_tornados_global <- function(inputs_sens){ 

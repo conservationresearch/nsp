@@ -16,7 +16,7 @@
 #' @param number_of_simulations A value specifying number of value draws for each parameter for each conservation program
 #' @return A dataframe "dat" for a single conservation program which contains n number of values (determined by number_of_simulations argument) for the costs and benefit metrics
 #' @examples
-#' parameter_prep(inputs,org_program, G_and_A_prop, number_of_simulations)
+#' # parameter_prep(inputs,org_program, G_and_A_prop, number_of_simulations)
 #' @export
 
 ##### Main function #####

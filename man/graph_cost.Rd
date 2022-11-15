@@ -21,5 +21,5 @@ This function creates a figure depicting the costs to the organization and the f
 with a current Green Score of zero are presented on a separate facet.
 }
 \examples{
-graph_cost(results_cost_organization, results_cost_total, inputs)
+#graph_cost(results_cost_organization, results_cost_total, inputs)
 }

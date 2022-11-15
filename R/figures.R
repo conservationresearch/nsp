@@ -13,7 +13,7 @@
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @return Returns the figure produced
 #' @examples
-#' graph_benefit(results_benefit_national, results_benefit_global, inputs)
+#' #graph_benefit(results_benefit_national, results_benefit_global, inputs)
 #' @export
 
 graph_benefit <- function(results_benefit_national, results_benefit_global, inputs){
@@ -114,7 +114,7 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @return Returns the figure produced
 #' @examples
-#' graph_cost(results_cost_organization, results_cost_total, inputs)
+#' #graph_cost(results_cost_organization, results_cost_total, inputs)
 #' @export
 
 graph_cost <- function(results_cost_organization, results_cost_total, inputs){
@@ -217,7 +217,7 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program
 #' @return Returns the figure produced
 #' @examples
-#' bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
+#' #bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 #' @export
 
 bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_global, inputs, results_overall){
@@ -292,7 +292,7 @@ bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_globa
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program
 #' @return Returns the figure produced
 #' @examples
-#' scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
+#' #scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
 #' @export
 
 scatter_bin_benefits_national<-function(results_benefit_national, inputs, results_overall){
@@ -351,7 +351,7 @@ scatter_bin_benefits_national<-function(results_benefit_national, inputs, result
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program
 #' @return Returns the figure produced
 #' @examples
-#' scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
+#' #scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
 #' @export
 
 scatter_bin_benefits_global<-function(results_benefit_global, inputs, results_overall){
@@ -409,7 +409,7 @@ scatter_bin_benefits_global<-function(results_benefit_global, inputs, results_ov
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program
 #' @return Returns the figure produced
 #' @examples
-#' bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
+#' #bargraph_binnedby_currentgs(results_BCR_global, results_BCR_national, inputs, results_overall)
 #' @export
 
 bargraph_binnedby_currentgs<-function(results_BCR_global, results_BCR_national, inputs, results_overall){
@@ -486,7 +486,7 @@ bargraph_binnedby_currentgs<-function(results_BCR_global, results_BCR_national, 
 #' @param results_benefit_national a dataframe produced from the cost benefit analysis that outlines the national benefit each program
 #' @return Returns the figure produced
 #' @examples
-#' scatter_bin_currentgs_national(results_overall, results_benefit_national)
+#' #scatter_bin_currentgs_national(results_overall, results_benefit_national)
 #' @export
 
 scatter_bin_currentgs_national<-function(results_overall,results_benefit_national){
@@ -550,7 +550,7 @@ scatter_bin_currentgs_national<-function(results_overall,results_benefit_nationa
 #' @param results_benefit_global A dataframe produced from the cost benefit analysis that outlines the global benefit of each program
 #' @return Returns the figure produced
 #' @examples
-#' scatter_bin_currentgs_global(results_overall, results_benefit_global)
+#' #scatter_bin_currentgs_global(results_overall, results_benefit_global)
 #' @export
 
 scatter_bin_currentgs_global<-function(results_overall,results_benefit_global){
@@ -615,7 +615,7 @@ scatter_bin_currentgs_global<-function(results_overall,results_benefit_global){
 #' @param results_BCR_global a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the global level
 #' @return Returns the figure produced
 #' @examples
-#' graph_BCR(results_BCR_national, results_BCR_global)
+#' #graph_BCR(results_BCR_national, results_BCR_global)
 #' @export
 
 graph_BCR <- function(results_BCR_national,results_BCR_global){
@@ -706,7 +706,7 @@ graph_BCR <- function(results_BCR_national,results_BCR_global){
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @return Returns the figure produced
 #' @examples
-#' graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
+#' #graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
 #' @export
 
 graph_BCR_uncertainty <- function(results_BCR_national,results_BCR_global, inputs){
@@ -789,7 +789,7 @@ graph_BCR_uncertainty <- function(results_BCR_national,results_BCR_global, input
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @return Returns the figure produced
 #' @examples
-#' graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
+#' #graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
 #' @export
 
 graph_BCR_directional_uncertainty <- function(results_BCR_national,results_BCR_global, inputs){

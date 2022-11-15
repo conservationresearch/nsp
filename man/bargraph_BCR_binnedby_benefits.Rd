@@ -28,5 +28,5 @@ This function can be used when the cost benefit analysis function cba_GplusD_Bin
 national and global benefits, giving priority to those that have the highest benefit.
 }
 \examples{
-bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
+#bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 }

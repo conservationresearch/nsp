@@ -20,5 +20,5 @@ Returns the figure produced
 This function produces a figure of the uncertainty around the means benefit-cost ratios at the national and global ratios for each program.
 }
 \examples{
-graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
+#graph_BCR_uncertainty(results_BCR_national, results_BCR_global, inputs)
 }

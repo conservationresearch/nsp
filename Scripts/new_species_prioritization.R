@@ -26,7 +26,8 @@ library(grid)
 ########## Analysis setup ##########
 
 ### Specify the input csv spreadsheet 
-inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v4.csv")
+# inputs<-read.csv(file="C:/Users/Dylanc/OneDrive - The Calgary Zoological Society/Documents/NewSpeciesPrioritization/Inputs/inputs_manuscript_v4.csv")
+inputs<-read.csv(file="C:/Users/LauraK/OneDrive - The Calgary Zoological Society/New Species Prioritization/Manuscript/inputs_manuscript_v4.csv")
 
 ### Adjust any names/labels within inputs
 inputs$species<-gsub(" (caurina subspecies)","", inputs$species, fixed=TRUE)

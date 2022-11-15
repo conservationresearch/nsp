@@ -19,5 +19,5 @@ This function can be used when the cost benefit analysis function cba_GplusD_Lon
 of the national benefits of each conservation program, binned by the current Green Score.
 }
 \examples{
-scatter_bin_currentgs_national(results_overall, results_benefit_national)
+#scatter_bin_currentgs_national(results_overall, results_benefit_national)
 }

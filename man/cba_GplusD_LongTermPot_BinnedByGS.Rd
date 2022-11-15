@@ -23,5 +23,5 @@ current Green Score. Species with a lower current Green Score are giving priorit
 is comparatively lower.
 }
 \examples{
-cba_GplusD_LongTermPot_BinnedByGS(org_programs, inputs, functional_score_max)
+# cba_GplusD_LongTermPot_BinnedByGS(org_programs, inputs, functional_score_max)
 }

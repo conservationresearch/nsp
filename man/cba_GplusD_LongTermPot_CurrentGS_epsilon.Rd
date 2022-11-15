@@ -26,5 +26,5 @@ Dependence, are relative to both the long term potential and current the Green S
 subjective value that is added to the current Green Score in order to accommodate species that have a current Green Score of zero.
 }
 \examples{
-cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs,inputs,functional_score_max)
+# cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs,inputs,functional_score_max)
 }

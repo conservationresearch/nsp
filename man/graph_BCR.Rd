@@ -18,5 +18,5 @@ Returns the figure produced
 This function produces a bargraph of the national and global benefit-cost ratios calculated in the analysis functions.
 }
 \examples{
-graph_BCR(results_BCR_national, results_BCR_global)
+#graph_BCR(results_BCR_national, results_BCR_global)
 }

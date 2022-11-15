@@ -24,5 +24,5 @@ at a high or low value and then recalculates values and performs the ranking aga
 interest.
 }
 \examples{
-sensitivity(org_programs, inputs, results_full_analysis, rank_cutoff)
+# sensitivity(org_programs, inputs, results_full_analysis, rank_cutoff)
 }

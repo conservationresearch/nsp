@@ -573,7 +573,7 @@ cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_ma
 #' @param functional_score_max The maximum possible score for a spatial unit
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' cba_GplusD_LongTermPot_BinnedByGS(org_programs, inputs, functional_score_max)
+#' # cba_GplusD_LongTermPot_BinnedByGS(org_programs, inputs, functional_score_max)
 #' @export
 
 cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_score_max){
@@ -803,7 +803,7 @@ cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_sco
 #' @param functional_score_max The maximum possible score for a spatial unit
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' cba_GplusD_CurrentGS_epsilon(org_programs, inputs, functional_score_max)
+#' # cba_GplusD_CurrentGS_epsilon(org_programs, inputs, functional_score_max)
 #' @export
 
 cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max){
@@ -969,7 +969,7 @@ cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_ma
 #' @param functional_score_max The maximum possible score for a spatial unit
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
-#' cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs,inputs,functional_score_max)
+#' # cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs,inputs,functional_score_max)
 #' @export
 
 cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max){
