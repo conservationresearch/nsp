@@ -123,7 +123,7 @@ figure_direction_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_directio
 
 ### Only use if performing binned analysis
 #for option 3
-figure_bincgain<-newSpeciesPrioritization::bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
+figure_bincgain<-newSpeciesPrioritization::bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall, endemic_species)
 figure_bincgain_scatternational<-newSpeciesPrioritization::scatter_bin_benefits_national(results_benefit_national, inputs, results_overall)
 figure_bincgain_scatterglobal<-newSpeciesPrioritization::scatter_bin_benefits_global(results_benefit_global, inputs, results_overall)
 #for option 4
