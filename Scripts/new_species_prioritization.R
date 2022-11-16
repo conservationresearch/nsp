@@ -58,7 +58,8 @@ conservation_breeding <-c("Banff Springs Snail", "Woodland Caribou","Boreal Felt
 epsilon <- 0.0375 
 
 ### Identify the program names from imported CSV
-org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+# No longer need this as moved into the function calls for the cba
+# org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
 
 ########## Main analysis function ##########
 

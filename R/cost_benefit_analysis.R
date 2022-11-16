@@ -22,6 +22,10 @@
 
 cba_GplusD<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-1
+  
+  # Extract the list of program names
+  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
@@ -191,6 +195,10 @@ cba_GplusD<-function(org_programs, inputs, functional_score_max, epsilon){
 
 cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max, epsilon){ 
   analysisoption<<-2
+
+  # Extract the list of program names
+  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
@@ -357,6 +365,10 @@ cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max, e
 
 cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-3
+  
+  # Extract the list of program names
+  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 9))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
@@ -582,6 +594,10 @@ cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_ma
 
 cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-4
+  
+  # Extract the list of program names
+  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
@@ -813,6 +829,10 @@ cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_sco
 
 cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-5
+  
+  # Extract the list of program names
+  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
@@ -980,6 +1000,10 @@ cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_ma
 
 cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-6
+  
+  # Extract the list of program names
+  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
+  
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
   colnames(results_overall) <- c("org_program", "BCR_national_EV","BCR_national_EV_rank",  
