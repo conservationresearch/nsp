@@ -8,7 +8,8 @@ bargraph_BCR_binnedby_benefits(
   results_BCR_national,
   results_BCR_global,
   inputs,
-  results_overall
+  results_overall,
+  endemic_species
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ bargraph_BCR_binnedby_benefits(
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{results_overall}{A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program}
+
+\item{endemic_species}{A vector specifying which species are endemic (e.g. c("Species 1","Species 2"))}
 }
 \value{
 Returns the figure produced
@@ -26,7 +29,4 @@ Returns the figure produced
 \description{
 This function can be used when the cost benefit analysis function cba_GplusD_BinnedByBenefit is used. This function creates a figure depicting the
 national and global benefits, giving priority to those that have the highest benefit.
-}
-\examples{
-#bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 }

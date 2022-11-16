@@ -215,12 +215,12 @@ graph_cost <- function(results_cost_organization, results_cost_total, inputs){
 #' @param results_BCR_global A dataframe produced from the cost benefit analysis that outlines the global benefit each program
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param results_overall A dataframe produced from the cost benefit analysis that outlines the BCR and ranks for each conservation program
+#' @param endemic_species A vector specifying which species are endemic (e.g. c("Species 1","Species 2"))
 #' @return Returns the figure produced
-#' @examples
-#' #bargraph_BCR_binnedby_benefits(results_BCR_national, results_BCR_global, inputs, results_overall)
 #' @export
 
-bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_global, inputs, results_overall){
+bargraph_BCR_binnedby_benefits<-function(results_BCR_national, results_BCR_global,
+                                         inputs, results_overall, endemic_species){
   
   # Add the category type to the results and then merge them so we can plot global and national together.
   results_BCR_global$Category<-"Global"

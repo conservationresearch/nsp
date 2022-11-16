@@ -4,12 +4,14 @@
 \alias{graph_BCR}
 \title{Figure of the benefit-cost ratios}
 \usage{
-graph_BCR(results_BCR_national, results_BCR_global)
+graph_BCR(results_BCR_national, results_BCR_global, inputs)
 }
 \arguments{
 \item{results_BCR_national}{a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the national level}
 
 \item{results_BCR_global}{a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the global level}
+
+\item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 }
 \value{
 Returns the figure produced
