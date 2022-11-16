@@ -87,6 +87,12 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
       }
       if(inputs_int$name[k] == "allSP_MandOrgContribution"){
         col_in_dat <- which(colnames(dat)== "max_prop_total_external_funding")
+        
+        # Bug fix Nov 16, 2022
+        # Vieweing it as the mandatory org contribution instead of max prop of total external funding means we are just looking at the high and lows inversely
+        # Therefore, update this column to be 1 - max_prop_total_external_funding so that the high and low on the tornado are labelled correctly
+        dat[,col_in_dat] <- 1- dat[,col_in_dat]
+        
       }
       #if(sub(".*_", "", inputs_int$name[k]) == "score"){
       #  col_in_dat <- which(colnames(dat) == "fundability")
