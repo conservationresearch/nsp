@@ -180,7 +180,7 @@ write.csv(results_ranking, filename, row.names = FALSE)
 ########## Sensitivity Analysis ##########
 
 #do sensitivity analysis
-inputs_sens <- newSpeciesPrioritization::sensitivity(org_programs, inputs, results_full_analysis, rank_cutoff = 6)
+inputs_sens <- newSpeciesPrioritization::sensitivity(inputs, results_full_analysis, rank_cutoff = 6)
 
 #Export the sensitivity table
 
