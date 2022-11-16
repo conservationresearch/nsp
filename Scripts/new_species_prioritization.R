@@ -115,7 +115,7 @@ results_ranking<-cbind(results_ranking, common_programs)
 ### Draw figures from figures function to show the results
 figure_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_national, results_benefit_global, inputs, endemic_species)
 figure_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs)
-figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_BCR_global, inputs)
+figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_BCR_global, inputs, endemic_species)
 figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(results_BCR_national,results_BCR_global, inputs)
 figure_direction_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_directional_uncertainty(results_BCR_national, results_BCR_global, inputs)
 

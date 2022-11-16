@@ -615,12 +615,13 @@ scatter_bin_currentgs_global<-function(results_overall,results_benefit_global){
 #' @param results_BCR_national a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the national level
 #' @param results_BCR_global a dataframe produced from the cost benefit analysis that outlines BCR and ranks for each conservation program at the global level
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param endemic_species A vector specifying which species are endemic (e.g., c("Species 2","Species 4")
 #' @return Returns the figure produced
 #' @examples
 #' #graph_BCR(results_BCR_national, results_BCR_global)
 #' @export
 
-graph_BCR <- function(results_BCR_national,results_BCR_global, inputs){
+graph_BCR <- function(results_BCR_national,results_BCR_global, inputs, endemic_species){
   results_BCR_global$Category <- "Global"
   results_BCR_national$Category <- "National"
   results_BCR_all <- rbind(results_BCR_national, results_BCR_global)
