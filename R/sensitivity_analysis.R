@@ -71,7 +71,8 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
       print(paste("Sensitivity:", inputs_int$name[k]))
       
       #Collect the data
-      row_in_inputs <- which(inputs$name == inputs_int$name[k])
+      # row_in_inputs <- which(inputs$name == inputs_int$name[k])
+      row_in_inputs_sens <- which(inputs_sens$name == inputs_int$name[k] & inputs_sens$species == org_programs[j])
       col_in_dat <- which(grepl(sub(".*_", "", inputs_int$name[k]), colnames(dat), fixed = TRUE) == TRUE)
       
       # Matching specific cases that don't work because of because of greediness of .*_ or different names in input_int vs colnames(dat)
@@ -101,8 +102,8 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
       rows_with_low <- which(dat[,col_in_dat] <=  input_low)
       
       # Calculate mean of the BCR_national and BCR_global from the subsetted rows and enter into inputs_sens df
-      inputs_sens$BCR_national_EV_low[row_in_inputs] <- mean(dat$BCR_national[rows_with_low])
-      inputs_sens$BCR_global_EV_low[row_in_inputs] <- mean(dat$BCR_global[rows_with_low])
+      inputs_sens$BCR_national_EV_low[row_in_inputs_sens] <- mean(dat$BCR_national[rows_with_low])
+      inputs_sens$BCR_global_EV_low[row_in_inputs_sens] <- mean(dat$BCR_global[rows_with_low])
       
       # Organize the results
       # Populate with results_overall with data
@@ -112,37 +113,37 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
       # Unorder these factor levels
       results_overall_int$org_program <- factor(results_overall_int$org_program, levels=unique(results_overall_int$org_program), ordered=FALSE) 
       # Input BCR_national_EV_low into corresponding program in intermediate df
-      results_overall_int$BCR_national_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_national_EV_low[row_in_inputs])
+      results_overall_int$BCR_national_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_national_EV_low[row_in_inputs_sens])
       # Input BCR_global_EV_low into corresponding program in intermediate df
-      results_overall_int$BCR_global_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_global_EV_low[row_in_inputs])
+      results_overall_int$BCR_global_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_global_EV_low[row_in_inputs_sens])
       
       #Ranking of projects after recalculating BCR at high value in national and global
       results_overall_int$BCR_national_rank_low<-rank(-results_overall_int$BCR_national_EV)
       results_overall_int$BCR_global_rank_low<-rank(-results_overall_int$BCR_global_EV)
       
-      inputs_sens$BCR_national_EV_rank_low[row_in_inputs]<-results_overall_int$BCR_national_rank_low[which(results_overall_int$org_program == as.character(org_programs[j]))]
-      inputs_sens$BCR_global_EV_rank_low[row_in_inputs]<-results_overall_int$BCR_global_rank_low[which(results_overall_int$org_program == as.character(org_programs[j]))]
+      inputs_sens$BCR_national_EV_rank_low[row_in_inputs_sens]<-results_overall_int$BCR_national_rank_low[which(results_overall_int$org_program == as.character(org_programs[j]))]
+      inputs_sens$BCR_global_EV_rank_low[row_in_inputs_sens]<-results_overall_int$BCR_global_rank_low[which(results_overall_int$org_program == as.character(org_programs[j]))]
       
       ##### Analysis at high value ##### 
       
       # Hold the value at the high and recalculate results
       input_high <- as.numeric(quantile(dat[,col_in_dat], 0.90))
       rows_with_high <- which(dat[,col_in_dat] >=  input_high)
-      inputs_sens$BCR_national_EV_high[row_in_inputs] <- mean(dat$BCR_national[rows_with_high])
-      inputs_sens$BCR_global_EV_high[row_in_inputs] <- mean(dat$BCR_global[rows_with_high])
+      inputs_sens$BCR_national_EV_high[row_in_inputs_sens] <- mean(dat$BCR_national[rows_with_high])
+      inputs_sens$BCR_global_EV_high[row_in_inputs_sens] <- mean(dat$BCR_global[rows_with_high])
       
       # Organize the results 
       results_overall  <- results_full_analysis[[1]]
       results_overall_int <- results_overall # initalize
-      results_overall_int$BCR_national_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_national_EV_high[row_in_inputs])
-      results_overall_int$BCR_global_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_global_EV_high[row_in_inputs])
+      results_overall_int$BCR_national_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_national_EV_high[row_in_inputs_sens])
+      results_overall_int$BCR_global_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_global_EV_high[row_in_inputs_sens])
       
       #Ranking of projects after recalculating BCR at high value in national and global
       results_overall_int$BCR_national_rank_high<-rank(-results_overall_int$BCR_national_EV)
       results_overall_int$BCR_global_rank_high<-rank(-results_overall_int$BCR_global_EV)
       
-      inputs_sens$BCR_national_EV_rank_high[row_in_inputs]<-results_overall_int$BCR_national_rank_high[which(results_overall_int$org_program == as.character(org_programs[j]))]
-      inputs_sens$BCR_global_EV_rank_high[row_in_inputs]<-results_overall_int$BCR_global_rank_high[which(results_overall_int$org_program == as.character(org_programs[j]))]
+      inputs_sens$BCR_national_EV_rank_high[row_in_inputs_sens]<-results_overall_int$BCR_national_rank_high[which(results_overall_int$org_program == as.character(org_programs[j]))]
+      inputs_sens$BCR_global_EV_rank_high[row_in_inputs_sens]<-results_overall_int$BCR_global_rank_high[which(results_overall_int$org_program == as.character(org_programs[j]))]
       
     } #end input loop
   } #end organization program loop
