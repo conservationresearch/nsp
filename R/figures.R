@@ -11,12 +11,13 @@
 #' @param results_benefit_national A dataframe produced from the cost benefit analysis that outlines the national benefit each program
 #' @param results_benefit_global A dataframe produced from the cost benefit analysis that outlines the global benefit each program
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
+#' @param endemic_species A vector specifying which species are endemic (e.g., c("Species 2","Species 4")
 #' @return Returns the figure produced
 #' @examples
 #' #graph_benefit(results_benefit_national, results_benefit_global, inputs)
 #' @export
 
-graph_benefit <- function(results_benefit_national, results_benefit_global, inputs){
+graph_benefit <- function(results_benefit_national, results_benefit_global, inputs, endemic_species){
   
   #Make Global vs National distinction and collect data for figure
   results_benefit_global$Category <- "Global"

@@ -4,7 +4,12 @@
 \alias{graph_benefit}
 \title{Figure of national and global benefits}
 \usage{
-graph_benefit(results_benefit_national, results_benefit_global, inputs)
+graph_benefit(
+  results_benefit_national,
+  results_benefit_global,
+  inputs,
+  endemic_species
+)
 }
 \arguments{
 \item{results_benefit_national}{A dataframe produced from the cost benefit analysis that outlines the national benefit each program}
@@ -12,6 +17,8 @@ graph_benefit(results_benefit_national, results_benefit_global, inputs)
 \item{results_benefit_global}{A dataframe produced from the cost benefit analysis that outlines the global benefit each program}
 
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
+
+\item{endemic_species}{A vector specifying which species are endemic (e.g., c("Species 2","Species 4")}
 }
 \value{
 Returns the figure produced
