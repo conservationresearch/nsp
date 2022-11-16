@@ -19,163 +19,6 @@
 #' # sensitivity(org_programs, inputs, results_full_analysis, rank_cutoff)
 #' @export
 
-# OLD - before trying to fix the bug wiht the two univseral cost variables
-sensitivity_OLD <- function(inputs, results_full_analysis, rank_cutoff){
-  
-  # Pull out the names of the programs
-  org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
-  
-  # Update the inputs dataframe with columns to store the sensitivity analysis results.
-  inputs_sens <- inputs # initialize
-  
-  inputs_sens$BCR_national_EV_low <- 'NA' # initialize
-  inputs_sens$BCR_national_EV_overall <- 'NA' # initialize
-  inputs_sens$BCR_national_EV_high <- 'NA' # initialize
-  inputs_sens$BCR_national_EV_rank_overall <- 'NA' #initialize
-  
-  inputs_sens$BCR_global_EV_low <- 'NA' # initialize
-  inputs_sens$BCR_global_EV_overall <- 'NA' # initialize
-  inputs_sens$BCR_global_EV_high <- 'NA' # initialize
-  inputs_sens$BCR_global_EV_rank_overall <- 'NA'# initialize
-
-  inputs_sens$tornado_label <- "N/A" # initialize
-  
-  # For each input, hold at the low or high value and run the analysis. Record the results.
-  
-  for(j in 1:length(org_programs)){
-    # Can now update using the dat file from each species simulation
-    dat <- results_full_analysis[[8]][[j]]  
-    
-    # Identify the inputs for this org program as well as the NA inputs
-    relevant_input_rows <- which(inputs$species == org_programs[j] | inputs$species == 'N/A')
-    n_inputs <- length(relevant_input_rows)
-    inputs_int <- inputs[relevant_input_rows,]
-
-    # Perform sensitivity analysis for each parameter for in each species
-    for(k in 1:n_inputs){
-      
-      print(paste("Sensitivity:", inputs_int$name[k]))
-      
-      #Collect the data
-      row_in_inputs <- which(inputs$name == inputs_int$name[k])
-      col_in_dat <- which(grepl(sub(".*_", "", inputs_int$name[k]), colnames(dat), fixed = TRUE) == TRUE)
-      
-      # Matching specific cases that don't work because of because of greediness of .*_ or different names in input_int vs colnames(dat)
-      if(sub(".*_", "", inputs_int$name[k]) == "OrganizationBenefit"){
-         col_in_dat <- which(colnames(dat) == "OrgBenefit")
-      }
-      if(sub(".*_", "", inputs_int$name[k]) == "pctRangeCountry"){
-        col_in_dat <- which(colnames(dat) == "species_range_pct_in_nation")
-      }
-      if(inputs_int$name[k] == "allSp_GandA_pct"){
-        col_in_dat <- which(colnames(dat) == "G_and_A_prop_of_total")
-      }
-      if(inputs_int$name[k] == "allSP_MandOrgContribution"){
-        col_in_dat <- which(colnames(dat)== "max_prop_total_external_funding")
-      }
-      #if(sub(".*_", "", inputs_int$name[k]) == "score"){
-      #  col_in_dat <- which(colnames(dat) == "fundability")
-      #}
-      
-      ##### Analysis at low value ##### 
-      
-      # Hold the value at the low and recalculate results
-      # Calculate the 0.1 quantile from each column in dat 
-      input_low <- as.numeric(quantile(dat[,col_in_dat], 0.10))
-      
-      # Extract rows from dat which are equal/less than the low quantile just calculated
-      rows_with_low <- which(dat[,col_in_dat] <=  input_low)
-      
-      # Calculate mean of the BCR_national and BCR_global from the subsetted rows and enter into inputs_sens df
-      inputs_sens$BCR_national_EV_low[row_in_inputs] <- mean(dat$BCR_national[rows_with_low])
-      inputs_sens$BCR_global_EV_low[row_in_inputs] <- mean(dat$BCR_global[rows_with_low])
-      
-      # Organize the results
-      # Populate with results_overall with data
-      results_overall  <- results_full_analysis[[1]]
-      #Create intermediate dataframe
-      results_overall_int <- results_overall # initialize
-      # Unorder these factor levels
-      results_overall_int$org_program <- factor(results_overall_int$org_program, levels=unique(results_overall_int$org_program), ordered=FALSE) 
-      # Input BCR_national_EV_low into corresponding program in intermediate df
-      results_overall_int$BCR_national_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_national_EV_low[row_in_inputs])
-      # Input BCR_global_EV_low into corresponding program in intermediate df
-      results_overall_int$BCR_global_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_global_EV_low[row_in_inputs])
-      
-      #Ranking of projects after recalculating BCR at high value in national and global
-      results_overall_int$BCR_national_rank_low<-rank(-results_overall_int$BCR_national_EV)
-      results_overall_int$BCR_global_rank_low<-rank(-results_overall_int$BCR_global_EV)
-      
-      inputs_sens$BCR_national_EV_rank_low[row_in_inputs]<-results_overall_int$BCR_national_rank_low[which(results_overall_int$org_program == as.character(org_programs[j]))]
-      inputs_sens$BCR_global_EV_rank_low[row_in_inputs]<-results_overall_int$BCR_global_rank_low[which(results_overall_int$org_program == as.character(org_programs[j]))]
-
-      ##### Analysis at high value ##### 
-      
-      # Hold the value at the high and recalculate results
-      input_high <- as.numeric(quantile(dat[,col_in_dat], 0.90))
-      rows_with_high <- which(dat[,col_in_dat] >=  input_high)
-      inputs_sens$BCR_national_EV_high[row_in_inputs] <- mean(dat$BCR_national[rows_with_high])
-      inputs_sens$BCR_global_EV_high[row_in_inputs] <- mean(dat$BCR_global[rows_with_high])
-      
-      # Organize the results 
-      results_overall  <- results_full_analysis[[1]]
-      results_overall_int <- results_overall # initalize
-      results_overall_int$BCR_national_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_national_EV_high[row_in_inputs])
-      results_overall_int$BCR_global_EV[which(results_overall_int$org_program == as.character(org_programs[j]))] <- as.numeric(inputs_sens$BCR_global_EV_high[row_in_inputs])
-      
-      #Ranking of projects after recalculating BCR at high value in national and global
-      results_overall_int$BCR_national_rank_high<-rank(-results_overall_int$BCR_national_EV)
-      results_overall_int$BCR_global_rank_high<-rank(-results_overall_int$BCR_global_EV)
-      
-      inputs_sens$BCR_national_EV_rank_high[row_in_inputs]<-results_overall_int$BCR_national_rank_high[which(results_overall_int$org_program == as.character(org_programs[j]))]
-      inputs_sens$BCR_global_EV_rank_high[row_in_inputs]<-results_overall_int$BCR_global_rank_high[which(results_overall_int$org_program == as.character(org_programs[j]))]
-      
-      } #end input loop
-  } #end organization program loop
-  
-  # For each program, fill in the full probabilistic results
-  for(j in 1:length(org_programs)){
-    
-    # identify the inputs for this org program
-    relevant_program_rows <- which(inputs_sens$species == as.character(org_programs[j]))
-    
-    # Fill in the overall program BCR results for this program for national and global
-    inputs_sens$BCR_national_EV_overall[relevant_program_rows] <- results_overall$BCR_national_EV[which(results_overall$org_program == as.character(org_programs[j]))]
-    inputs_sens$BCR_global_EV_overall[relevant_program_rows] <- results_overall$BCR_global_EV[which(results_overall$org_program == as.character(org_programs[j]))]
-  
-    # Fill in the overall program rank results for this program for national and global
-    inputs_sens$BCR_national_EV_rank_overall[relevant_program_rows] <- results_overall$BCR_national_EV_rank[which(results_overall$org_program == as.character(org_programs[j]))]
-    inputs_sens$BCR_global_EV_rank_overall[relevant_program_rows] <- results_overall$BCR_global_EV_rank[which(results_overall$org_program == as.character(org_programs[j]))]
-  } 
-  
-  # Calculate the difference in ranks in national and global from the overall program rank
-  #National
-  inputs_sens$difference_in_ranks_overall_minus_low_national <- as.numeric(inputs_sens$BCR_national_EV_rank_overall) - as.numeric(inputs_sens$BCR_national_EV_rank_low)
-  inputs_sens$difference_in_ranks_overall_minus_high_national <- as.numeric(inputs_sens$BCR_national_EV_rank_overall) - as.numeric(inputs_sens$BCR_national_EV_rank_high)
-  #Global
-  inputs_sens$difference_in_ranks_overall_minus_low_global <- as.numeric(inputs_sens$BCR_global_EV_rank_overall) - as.numeric(inputs_sens$BCR_global_EV_rank_low)
-  inputs_sens$difference_in_ranks_overall_minus_high_global <- as.numeric(inputs_sens$BCR_global_EV_rank_overall) - as.numeric(inputs_sens$BCR_global_EV_rank_high)
-  #Calculate the swing of national and national ranks 
-  inputs_sens$swing_ranks_national <- abs(inputs_sens$difference_in_ranks_overall_minus_low_national) + abs(inputs_sens$difference_in_ranks_overall_minus_high_national)
-  inputs_sens$swing_ranks_global <- abs(inputs_sens$difference_in_ranks_overall_minus_low_global) + abs(inputs_sens$difference_in_ranks_overall_minus_high_global)
-   
-  #Determine current ranks and potential ranks
-  #national
-  inputs_sens$decision_sensitive_national <- "No" # initialize
-  inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_low) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
-  inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_high) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
-  inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) > rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_low) <=rank_cutoff)] <- paste("Yes - out of top", rank_cutoff, "overall but could be in")
-  inputs_sens$decision_sensitive_national[which(as.numeric(inputs_sens$BCR_national_EV_rank_overall) > rank_cutoff & as.numeric(inputs_sens$BCR_national_EV_rank_high) <=rank_cutoff)] <- paste("Yes - out of top", rank_cutoff, "overall but could be in")
-  #global
-  inputs_sens$decision_sensitive_global <- "No" # initialize
-  inputs_sens$decision_sensitive_global[which(as.numeric(inputs_sens$BCR_global_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_global_EV_rank_low) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
-  inputs_sens$decision_sensitive_global[which(as.numeric(inputs_sens$BCR_global_EV_rank_overall) <= rank_cutoff & as.numeric(inputs_sens$BCR_global_EV_rank_high) >rank_cutoff)] <- paste("Yes - in top", rank_cutoff, "overall but could be out")
-  inputs_sens$decision_sensitive_global[which(as.numeric(inputs_sens$BCR_global_EV_rank_overall) > rank_cutoff & as.numeric(inputs_sens$BCR_global_EV_rank_low) <=rank_cutoff)] <- paste("Yes - out of top", rank_cutoff, "overall but could be in")
-  inputs_sens$decision_sensitive_global[which(as.numeric(inputs_sens$BCR_global_EV_rank_overall) > rank_cutoff & as.numeric(inputs_sens$BCR_global_EV_rank_high) <=rank_cutoff)] <- paste("Yes - out of top", rank_cutoff, "overall but could be in")
-  
-  return(inputs_sens)
-}#end of sensitivity function
-
 sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
   
   # Pull out the names of the programs
@@ -184,19 +27,20 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
   # Update the inputs dataframe with columns to store the sensitivity analysis results.
   inputs_sens <- inputs # initialize
   
-  # For the variables that apply to all (i.e. species is NA), replicate so that it can be tested for sensitivity for each species
-  rows_to_replicate <- which(inputs$species == "N/A")
-  number_of_programs <- length(org_programs)
-  
-  for(i in 1:number_of_programs){
-    new <- inputs[rows_to_replicate,]
-    new$species <- org_programs[i]
-    inputs_sens <- rbind(inputs_sens, new)
-  }
-  
-  # Remove the one that now doesn't apply to anything
-  inputs_sens <- inputs_sens[which(inputs_sens$species != "N/A"),]
-  
+  # Bug fix Nov 16, 2022
+    # For the variables that apply to all (i.e. species is NA), replicate so that it can be tested for sensitivity for each species
+    rows_to_replicate <- which(inputs$species == "N/A")
+    number_of_programs <- length(org_programs)
+    
+    for(i in 1:number_of_programs){
+      new <- inputs[rows_to_replicate,]
+      new$species <- org_programs[i]
+      inputs_sens <- rbind(inputs_sens, new)
+    }
+    
+    # Remove the one that now doesn't apply to anything
+    inputs_sens <- inputs_sens[which(inputs_sens$species != "N/A"),]
+    
   # Initalize some columns as blank for now
   inputs_sens$BCR_national_EV_low <- 'NA' # initialize
   inputs_sens$BCR_national_EV_overall <- 'NA' # initialize
