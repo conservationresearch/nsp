@@ -193,6 +193,10 @@ draw_tornados_national <- function(inputs_sens){
   #Needs documentation
   ### Draw tornados for national level
   
+  # Pull out the names of the programs
+  org_programs <- unique(inputs_sens$species)[which(unique(inputs_sens$species) != "N/A")]
+  
+  
   #Populate with data from sensitivity analysis columns
   int_low_national <- inputs_sens[,c("species", "category",
                             "subcategory", "type", 
@@ -323,6 +327,9 @@ draw_tornados_national <- function(inputs_sens){
 #' @export
 
 draw_tornados_global <- function(inputs_sens){ 
+  
+  # Pull out the names of the programs
+  org_programs <- unique(inputs_sens$species)[which(unique(inputs_sens$species) != "N/A")]
  
   
   int_low_global <- inputs_sens[,c("species", "category",
