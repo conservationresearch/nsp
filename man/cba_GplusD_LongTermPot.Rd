@@ -4,7 +4,7 @@
 \alias{cba_GplusD_LongTermPot}
 \title{Cost benefit analysis with long term potential}
 \usage{
-cba_GplusD_LongTermPot(org_programs, inputs, functional_score_max)
+cba_GplusD_LongTermPot(org_programs, inputs, functional_score_max, epsilon)
 }
 \arguments{
 \item{org_programs}{A vector of the conservation program names}
@@ -12,6 +12,8 @@ cba_GplusD_LongTermPot(org_programs, inputs, functional_score_max)
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{functional_score_max}{The maximum possible score for a spatial unit}
+
+\item{epsilon}{As described in the paper}
 }
 \value{
 Returns a list of dataframes containing all the different results

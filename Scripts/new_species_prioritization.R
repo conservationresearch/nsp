@@ -74,7 +74,8 @@ org_programs <- unique(inputs$species)[which(unique(inputs$species) != "N/A")]
 
 results_full_analysis <-  newSpeciesPrioritization::cba_GplusD(org_programs = org_programs, 
                                                  inputs = inputs,
-                                                 functional_score_max = functional_score_max)
+                                                 functional_score_max = functional_score_max, 
+                                                 epsilon = epsilon)
                                         
 ### Store the results
 results_overall <- results_full_analysis[[1]]

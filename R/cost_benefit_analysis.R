@@ -14,12 +14,13 @@
 #' @param org_programs A vector of the conservation program names
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param functional_score_max The maximum possible score for a spatial unit
+#' @param epsilon As described in the paper
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
 #' # cba_GplusD(org_programs,inputs,functional_score_max)
 #' @export
 
-cba_GplusD<-function(org_programs, inputs, functional_score_max){
+cba_GplusD<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-1
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -182,12 +183,13 @@ cba_GplusD<-function(org_programs, inputs, functional_score_max){
 #' @param org_programs A vector of the conservation program names
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param functional_score_max The maximum possible score for a spatial unit
+#' @param epsilon As described in the paper
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
 #' # cba_GplusD_LongTermPot(org_programs,inputs,functional_score_max)
 #' @export
 
-cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max){ 
+cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max, epsilon){ 
   analysisoption<<-2
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -347,12 +349,13 @@ cba_GplusD_LongTermPot <- function(org_programs, inputs, functional_score_max){
 #' @param org_programs A vector of the conservation program names
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param functional_score_max The maximum possible score for a spatial unit
+#' @param epsilon As described in the paper
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
 #' # cba_GplusD_BinnedByBenefit(org_programs,inputs,functional_score_max)
 #' @export
 
-cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_max){
+cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-3
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 9))
@@ -571,12 +574,13 @@ cba_GplusD_BinnedByBenefit <- function(org_programs, inputs, functional_score_ma
 #' @param org_programs A vector of the conservation program names
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs  
 #' @param functional_score_max The maximum possible score for a spatial unit
+#' @param epsilon As described in the paper
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
 #' # cba_GplusD_LongTermPot_BinnedByGS(org_programs, inputs, functional_score_max)
 #' @export
 
-cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_score_max){
+cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-4
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -801,12 +805,13 @@ cba_GplusD_LongTermPot_BinnedByGS<-function(org_programs, inputs, functional_sco
 #' @param org_programs A vector of the conservation program names
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs 
 #' @param functional_score_max The maximum possible score for a spatial unit
+#' @param epsilon As described in the paper
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
 #' # cba_GplusD_CurrentGS_epsilon(org_programs, inputs, functional_score_max)
 #' @export
 
-cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max){
+cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-5
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))
@@ -967,12 +972,13 @@ cba_GplusD_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_ma
 #' @param org_programs A vector of the conservation program names
 #' @param inputs A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs
 #' @param functional_score_max The maximum possible score for a spatial unit
+#' @param epsilon As described in the paper
 #' @return Returns a list of dataframes containing all the different results
 #' @examples
 #' # cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs,inputs,functional_score_max)
 #' @export
 
-cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max){
+cba_GplusD_LongTermPot_CurrentGS_epsilon<-function(org_programs, inputs, functional_score_max, epsilon){
   analysisoption<<-6
   ##### Creating empty df to hold results #####
   results_overall <- as.data.frame(matrix(nrow = length(org_programs), ncol = 5))

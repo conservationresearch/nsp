@@ -7,7 +7,8 @@
 cba_GplusD_LongTermPot_CurrentGS_epsilon(
   org_programs,
   inputs,
-  functional_score_max
+  functional_score_max,
+  epsilon
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ cba_GplusD_LongTermPot_CurrentGS_epsilon(
 \item{inputs}{A CSV containing the conservation programs and the P5, P50, and P95 of associated benefits and costs}
 
 \item{functional_score_max}{The maximum possible score for a spatial unit}
+
+\item{epsilon}{As described in the paper}
 }
 \value{
 Returns a list of dataframes containing all the different results
