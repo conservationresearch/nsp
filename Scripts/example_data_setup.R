@@ -5,15 +5,10 @@
 # Take our original inputs
 inputs<-read.csv(file="C:/Users/LauraK/OneDrive - The Calgary Zoological Society/New Species Prioritization/Manuscript/inputs_manuscript_v4.csv")
 
-
 # Choose a few species to anonymize and include, include 'NA'
-species <- unique(inputs$species)
+# I decided to include all the invertebrates 
 
-# species_1 <- species[3]# ferret
-# species_2 <- species[5] # lichen
-# species_3 <- species[8] # skipper
-# species_4 <- species[14] # frog
-# # species[13], species[16], species[19]
+species <- unique(inputs$species)
 
 species_1 <- species[2]# snail
 species_2 <- species[8] # skipper
@@ -21,7 +16,6 @@ species_3 <- species[11] # hairstreak
 species_4 <- species[13] # ringlet
 species_5 <- species[17] # checkerspot
 species_6 <- species[20] # yucca
-
 
 rows_to_include_generic <- which(inputs$species == "N/A")
 rows_to_include_species_1 <- which(inputs$species == species_1)
