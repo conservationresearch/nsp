@@ -46,11 +46,16 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
   inputs_sens$BCR_national_EV_overall <- 'NA' # initialize
   inputs_sens$BCR_national_EV_high <- 'NA' # initialize
   inputs_sens$BCR_national_EV_rank_overall <- 'NA' #initialize
+  inputs_sens$BCR_national_EV_rank_low <- 'NA' #initialize
+  inputs_sens$BCR_national_EV_rank_high <- 'NA' #initialize
+  
   
   inputs_sens$BCR_global_EV_low <- 'NA' # initialize
   inputs_sens$BCR_global_EV_overall <- 'NA' # initialize
   inputs_sens$BCR_global_EV_high <- 'NA' # initialize
   inputs_sens$BCR_global_EV_rank_overall <- 'NA'# initialize
+  inputs_sens$BCR_global_EV_rank_low <- 'NA' #initialize
+  inputs_sens$BCR_global_EV_rank_high <- 'NA' #initialize
   
   inputs_sens$tornado_label <- "N/A" # initialize
   
