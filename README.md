@@ -25,6 +25,7 @@ Current Green Score. Projects that have a lower Current Green Score are given pr
 To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation, and sensitivty analysis. 
 
 Here is some example code showing how to use this package:
+
 #---- Clear the workspace. ----
 
 rm(list = ls())
