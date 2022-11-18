@@ -23,3 +23,98 @@ of cost, are given priority. Option 4 performs the same calculations as Option 2
 Current Green Score. Projects that have a lower Current Green Score are given priority giving priority to species that are more at risk. Option 5 calculates the benfit as the Conservation Gain plus Conservation Dependence, relative to Current Green Score plus epsilon. Option 6 quantifies the benefit as the Conservation Gain Plus Conservation Dependence, relative to Long Term Aspiration, and relative to the Current Green Score plus epsilon. Epsilon is a subjective term that is included to resolve the problem of dividing by zero in Species that have a Current Green Score of zero (extirpated). 
 
 To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation, and sensitivty analysis. 
+
+Here is some example code showing how to use this package:
+
+--- Clear the workspace. ----
+rm(list = ls())
+
+#---- Load the package. ----
+# Install it first if haven't already by commenting out the line below
+# remotes::install_github("conservationresearch/newSpeciesPrioritization")
+library(newSpeciesPrioritization)
+
+# load packages for figures
+library(gridExtra)
+library(grid)
+
+#---- Demo: set up ----
+
+# Load example data
+dat_example <- newSpeciesPrioritization::ExampleDataset
+
+# Specify the number of iterations and set the random seed
+number_of_simulations <- 10000
+set.seed(123) # to ensure the same set of random numbers each time
+
+# Specify what the max score is for functional
+functional_score_max <- 10 # 10 if using the fine-scale weights, 9 otherwise
+
+# Specify epsilon value 
+epsilon <- 0.0375
+
+# Specify endemic species, needed to label the benefit and BCR figures with a * 
+endemic_species <- c("Species A", "Species D")
+
+# Specify species with conservation breeding potential, needed to label the cost figure with a 'B'
+conservation_breeding <-c("Species A", "Species B", "Species C", "Species E")
+
+#---- Demo: run the analysis ----
+
+# Run the simulation using cost_benefit function
+
+#IMPORTANT - User specifies which function to run
+# 1) cba_GplusD
+# 2) cba_GplusD_LongTermPot
+# 3) cba_GplusD_BinnedByBenefit
+# 4) cba_GplusD_LongTermPot_BinnedByGS
+# 5) cba_GplusD_CurrentGS_epsilon
+# 6) cba_GplusD_LongTermPot_CurrentGS_epsilon
+
+results_full_analysis <-  newSpeciesPrioritization::cba_GplusD_LongTermPot_CurrentGS_epsilon(org_programs = org_programs, 
+                                                               inputs = dat_example,
+                                                               functional_score_max = functional_score_max, 
+                                                               epsilon = epsilon)
+
+# Extract/store the individual components of the results 
+
+results_overall <- results_full_analysis[[1]] # this is a summary table of the results
+results_cost_total <- results_full_analysis[[2]]
+results_cost_organization <- results_full_analysis[[3]]
+results_benefit_national <- results_full_analysis[[4]]
+results_benefit_global <- results_full_analysis[[5]]
+results_BCR_national <- results_full_analysis[[6]]
+results_BCR_global <- results_full_analysis[[7]]
+
+
+#---- Demo: draw figures ----
+
+# Graph the benefit and cost separately and show in a panel graph
+figure_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_national, results_benefit_global, 
+                                                          inputs = dat_example,
+                                                          endemic_species = endemic_species)
+figure_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs = dat_example)
+gridExtra::grid.arrange(figure_benefit, figure_cost, ncol=2, nrow=1)
+
+# Graph the BCR and associated uncertainty and show in a panel graph 
+figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_BCR_global, 
+                                                  inputs = dat_example, 
+                                                  endemic_species = endemic_species)
+figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(results_BCR_national,results_BCR_global, inputs = dat_example)
+figure_direction_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_directional_uncertainty(results_BCR_national, results_BCR_global, inputs = dat_example)
+grid::grid.draw(cbind(figure_BCR, figure_direction_BCR_uncertainty))
+
+
+#---- Demo: sensitivity analysis ----
+
+# Run the sensitivity analysis
+inputs_sens <- newSpeciesPrioritization::sensitivity(inputs = dat_example, results_full_analysis, rank_cutoff = 3)
+
+# Draw tornado plots from sensitivity analysis using the national ranking
+tornado_spSpecific_national_list<-newSpeciesPrioritization::draw_tornados_national(inputs_sens = inputs_sens)
+tornado_spSpecific_national_list[[1]] # look at the first one, change to a 2 to see the second, etc.
+
+# Draw tornado plots from sensitivity analysis using the global ranking
+tornado_spSpecific_global_list<-newSpeciesPrioritization::draw_tornados_global(inputs_sens = inputs_sens)
+tornado_spSpecific_global_list[[1]] # look at the first one, change to a 2 to see the second, etc.
+
