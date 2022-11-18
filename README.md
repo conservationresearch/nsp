@@ -41,6 +41,7 @@ library(newSpeciesPrioritization)
 #---- Load other packages used here for figures. ----
 
 library(gridExtra)
+
 library(grid)
 
 #---- Load example data ----
@@ -50,13 +51,17 @@ dat_example <- newSpeciesPrioritization::ExampleDataset
 #---- Specify the number of iterations and set the random seed ----
 
 number_of_simulations <- 10000
+
 set.seed(123) # to ensure the same set of random numbers each time
 
 #---- Specify some parameters. ----
 
 functional_score_max <- 10 # 10 if using the fine-scale weights, 9 otherwise
+
 epsilon <- 0.0375
+
 endemic_species <- c("Species A", "Species D") # Specify endemic species, needed to label the benefit and BCR figures with a * 
+
 conservation_breeding <-c("Species A", "Species B", "Species C", "Species E") # Specify species with conservation breeding potential, needed to label the cost figure with a 'B'
 
 #---- Run the simulation using cost_benefit function ----
@@ -77,11 +82,17 @@ results_full_analysis <-  newSpeciesPrioritization::cba_GplusD_LongTermPot_Curre
 #---- Extract/store the individual components of the results  ----
 
 results_overall <- results_full_analysis[[1]] # this is a summary table of the results
+
 results_cost_total <- results_full_analysis[[2]]
+
 results_cost_organization <- results_full_analysis[[3]]
+
 results_benefit_national <- results_full_analysis[[4]]
+
 results_benefit_global <- results_full_analysis[[5]]
+
 results_BCR_national <- results_full_analysis[[6]]
+
 results_BCR_global <- results_full_analysis[[7]]
 
 #---- Graph the benefit and cost separately and show in a panel graph  ----
@@ -89,7 +100,9 @@ results_BCR_global <- results_full_analysis[[7]]
 figure_benefit <- newSpeciesPrioritization::graph_benefit(results_benefit_national, results_benefit_global, 
                                                           inputs = dat_example,
                                                           endemic_species = endemic_species)
+                                                          
 figure_cost <- newSpeciesPrioritization::graph_cost(results_cost_organization, results_cost_total, inputs = dat_example)
+
 gridExtra::grid.arrange(figure_benefit, figure_cost, ncol=2, nrow=1)
 
 #---- Graph the BCR and associated uncertainty and show in a panel graph   ----
@@ -97,8 +110,11 @@ gridExtra::grid.arrange(figure_benefit, figure_cost, ncol=2, nrow=1)
 figure_BCR <- newSpeciesPrioritization::graph_BCR(results_BCR_national, results_BCR_global, 
                                                   inputs = dat_example, 
                                                   endemic_species = endemic_species)
+                                                  
 figure_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_uncertainty(results_BCR_national,results_BCR_global, inputs = dat_example)
+
 figure_direction_BCR_uncertainty <- newSpeciesPrioritization::graph_BCR_directional_uncertainty(results_BCR_national, results_BCR_global, inputs = dat_example)
+
 grid::grid.draw(cbind(figure_BCR, figure_direction_BCR_uncertainty))
 
 #---- Run the sensitivity analysis ----
@@ -108,9 +124,11 @@ inputs_sens <- newSpeciesPrioritization::sensitivity(inputs = dat_example, resul
 #---- Draw tornado plots from sensitivity analysis using the national ranking ----
 
 tornado_spSpecific_national_list<-newSpeciesPrioritization::draw_tornados_national(inputs_sens = inputs_sens)
+
 tornado_spSpecific_national_list[[1]] # look at the first one, change to a 2 to see the second, etc.
 
 #---- Draw tornado plots from sensitivity analysis using the global ranking ----
 
 tornado_spSpecific_global_list<-newSpeciesPrioritization::draw_tornados_global(inputs_sens = inputs_sens)
+
 tornado_spSpecific_global_list[[1]] # look at the first one, change to a 2 to see the second, etc.
