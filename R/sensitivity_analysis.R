@@ -107,7 +107,9 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
       
       # Hold the value at the low and recalculate results
       # Calculate the 0.1 quantile from each column in dat 
-      input_low <- as.numeric(quantile(dat[,col_in_dat], 0.10))
+      # input_low <- as.numeric(quantile(dat[,col_in_dat], 0.10)) # bug fix Nov 18, 2022 - we are labeling as P5, so let's use P5 here instead
+      input_low <- as.numeric(quantile(dat[,col_in_dat], 0.05))
+      
       
       # Extract rows from dat which are equal/less than the low quantile just calculated
       rows_with_low <- which(dat[,col_in_dat] <=  input_low)
@@ -138,7 +140,8 @@ sensitivity <- function(inputs, results_full_analysis, rank_cutoff){
       ##### Analysis at high value ##### 
       
       # Hold the value at the high and recalculate results
-      input_high <- as.numeric(quantile(dat[,col_in_dat], 0.90))
+      # input_high <- as.numeric(quantile(dat[,col_in_dat], 0.90))# bug fix Nov 18, 2022 - we are labelling as P95, so let's use P95 here instead
+      input_high <- as.numeric(quantile(dat[,col_in_dat], 0.95))
       rows_with_high <- which(dat[,col_in_dat] >=  input_high)
       inputs_sens$BCR_national_EV_high[row_in_inputs_sens] <- mean(dat$BCR_national[rows_with_high])
       inputs_sens$BCR_global_EV_high[row_in_inputs_sens] <- mean(dat$BCR_global[rows_with_high])
