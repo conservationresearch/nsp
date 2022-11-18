@@ -40,7 +40,6 @@ library(grid)
 
 #---- Load example data ----
 dat_example <- newSpeciesPrioritization::ExampleDataset
-# dat_example <- read.csv(file="C:/Users/LauraK/OneDrive - The Calgary Zoological Society/New Species Prioritization/Manuscript/inputs_manuscript_v4.csv") # for my practicing
 
 #---- Specify the number of iterations and set the random seed ----
 number_of_simulations <- 10000
