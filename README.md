@@ -22,7 +22,6 @@ calculations as Option 1, however, before ranking the BCRs it bins the conservat
 of cost, are given priority. Option 4 performs the same calculations as Option 2, however, before ranking the BCRs it bins the conservation projects based on their
 Current Green Score. Projects that have a lower Current Green Score are given priority giving priority to species that are more at risk. Option 5 calculates the benfit as the Conservation Gain plus Conservation Dependence, relative to Current Green Score plus epsilon. Option 6 quantifies the benefit as the Conservation Gain Plus Conservation Dependence, relative to Long Term Aspiration, and relative to the Current Green Score plus epsilon. Epsilon is a subjective term that is included to resolve the problem of dividing by zero in Species that have a Current Green Score of zero (extirpated). 
 
-To use this package, users will need to edit the wrapper script new_species_prioritization.R file within the "Scripts" folder. After editing the input and output locations, specifiying variables, etc, this wrapper script can then call the other scripts contained within the "R" folder to perform the value draws, analysis, figure generation, and sensitivty analysis. 
 
 Here is some example code showing how to use this package:
 
