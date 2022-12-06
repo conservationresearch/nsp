@@ -54,7 +54,7 @@ graph_benefit <- function(results_benefit_national, results_benefit_global, inpu
   if(analysisoption==6){
     xlabel = "Mean program benefit "}
   # Make figure
-  benefits_graph2 <- ggplot2::ggplot(sim_results_summary_benefits, ggplot2::aes(y = org_program, x = P50, fill = Category)) +
+  benefits_graph2 <- ggplot2::ggplot(sim_results_summary_benefits, ggplot2::aes(y = org_program, x = mean, fill = Category)) +
     ggplot2::geom_bar(stat="identity",position =ggplot2::position_dodge()) +
     ggplot2::facet_wrap(~sim_results_summary_benefits$extirpated_or_extinct,nrow=2, ncol=1, scales="free") + 
     ggplot2::geom_text(ggplot2::aes(label = lab), hjust = 0.1, vjust = 0.75 , size = 10) +
